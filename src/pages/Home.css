@@ -1,0 +1,235 @@
+.home-container {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 65px);
+}
+
+.home-content {
+  flex: 1;
+  padding: 4.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.badge {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333333;
+  padding: 0.45rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  width: fit-content;
+  margin-bottom: 2rem;
+  letter-spacing: 0.01em;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--primary-color);
+  margin-bottom: 1.6rem;
+  letter-spacing: 0.02em;
+}
+
+.hero-description {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 2.5rem;
+  max-width: 480px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.btn {
+  padding: 0.85rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #222222;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #222222;
+  border: 1.5px solid #222222;
+}
+
+.btn-secondary:hover {
+  background-color: #f7f7f7;
+  transform: translateY(-1px);
+}
+
+.features-list {
+  display: flex;
+  gap: 1.8rem;
+  align-items: center;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #555555;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.home-visuals {
+  flex: 1.1;
+  background-color: var(--main-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 3rem 2rem 5rem 2rem;
+}
+
+.visual-stage {
+  position: relative;
+  width: 460px;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.pattern-card {
+  position: relative;
+  width: 420px;
+  height: 240px;
+  background-color: #1e1e1e;
+  border-radius: 16px;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.pattern-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.pink-note {
+  position: absolute;
+  top: -24px;
+  right: -10px;
+  background-color: #ffb7d5;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 10;
+}
+
+.pink-note-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.pink-note-sub {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #4a2838;
+  margin-top: 2px;
+}
+
+.mascot-hero-img {
+  position: absolute;
+  left: -20px;
+  bottom: -15px;
+  height: 310px;
+  width: auto;
+  z-index: 5;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+  pointer-events: none;
+}
+
+.floating-cards {
+  position: absolute;
+  bottom: 2.5rem;
+  background: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.8rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  gap: 1.5rem;
+}
+
+.card-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card-item.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card-item.clickable:hover {
+  transform: translateY(-1px);
+}
+
+.emoji {
+  font-size: 1.4rem;
+}
+
+.hours-badge {
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.card-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #222222;
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background-color: #ebebeb;
+}
