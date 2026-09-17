@@ -90,3 +90,26 @@
     transform: translateY(0);
   }
 }
+
+/* Mobile Web Compatibility */
+@media (max-width: 768px) {
+  .faq-container {
+    padding: 2.5rem 1.2rem 4rem 1.2rem;
+  }
+
+  .faq-title {
+    font-size: 2rem;
+  }
+
+  .faq-subtitle {
+    font-size: 0.98rem;
+  }
+
+  .faq-question {
+    font-size: 0.98rem;
+  }
+
+  .faq-answer {
+    font-size: 0.9rem;
+  }
+}

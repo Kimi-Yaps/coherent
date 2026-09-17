@@ -114,3 +114,34 @@
   background-color: #000000;
   transform: translateY(-1px);
 }
+
+/* Mobile Web Compatibility */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1.4rem 1rem;
+  }
+
+  .profile-page-header {
+    font-size: 1.7rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .profile-card {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .profile-header {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 54px;
+    height: 54px;
+    font-size: 1.3rem;
+  }
+
+  .save-btn {
+    width: 100%;
+  }
+}

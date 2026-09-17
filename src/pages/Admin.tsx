@@ -787,7 +787,7 @@ const Admin = () => {
                         <th style={{ minWidth: '220px' }}>Diagnosis / Condition</th>
                         <th style={{ minWidth: '145px' }}>Relapse Status</th>
                         <th style={{ minWidth: '160px' }}>Assigned Clinician</th>
-                        <th style={{ minWidth: '130px', textAlign: 'center' }}>Action</th>
+                        <th style={{ minWidth: '85px', textAlign: 'center' }}>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -846,13 +846,18 @@ const Admin = () => {
                             </td>
                             <td style={{ textAlign: 'center' }}>
                               <button
-                                className="btn-inspect-timeline"
+                                className="icon-action-btn eye-btn"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleOpenEvent(ev);
                                 }}
+                                title="Inspect patient dialogue & relapse symptoms"
+                                aria-label="Inspect patient dialogue and relapse symptoms"
                               >
-                                Inspect &rarr;
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
                               </button>
                             </td>
                           </tr>
@@ -1396,7 +1401,7 @@ const Admin = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveEditedTrigger}>
+            <form className="edit-trigger-form" onSubmit={handleSaveEditedTrigger}>
               <div className="modal-form-body">
                 <div className="form-grid-2col">
                   <div className="form-field-group">
@@ -1465,6 +1470,7 @@ const Admin = () => {
                 <div className="form-field-group">
                   <label className="form-label">Detection Cues & Keywords (comma separated)</label>
                   <textarea
+                    rows={2}
                     className="form-textarea"
                     value={editingTrigger.detectionCues}
                     onChange={(e) => setEditingTrigger({ ...editingTrigger, detectionCues: e.target.value })}
@@ -1489,6 +1495,7 @@ const Admin = () => {
                 <div className="form-field-group">
                   <label className="form-label">Clinical Rationale & Context</label>
                   <textarea
+                    rows={2}
                     className="form-textarea"
                     placeholder="Document clinical guidance or reason why this trigger signals relapse vulnerability..."
                     value={editingTrigger.clinicalRationale || ''}

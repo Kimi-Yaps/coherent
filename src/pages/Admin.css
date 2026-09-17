@@ -405,13 +405,21 @@
   background-color: #ffffff;
   border-radius: 16px;
   width: 100%;
-  max-width: 760px;
-  max-height: 92vh;
+  max-width: 720px;
+  max-height: min(88vh, 740px);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   animation: modalFadeIn 0.22s ease-out;
+}
+
+.edit-trigger-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @keyframes modalFadeIn {
@@ -1233,11 +1241,12 @@
   border: 1px solid #e0e0e0;
   background-color: #ffffff;
   color: #555555;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .icon-action-btn:hover {
@@ -1479,11 +1488,33 @@
 
 /* Edit Trigger Details Modal Form */
 .modal-form-body {
-  padding: 1.8rem 2rem;
+  padding: 1.3rem 2rem;
   overflow-y: auto;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.1rem;
+}
+
+.form-textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #222222;
+  min-height: 58px;
+  max-height: 110px;
+  resize: vertical;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-textarea:focus {
+  border-color: #485937;
+  box-shadow: 0 0 0 3px rgba(72, 89, 55, 0.12);
 }
 
 .form-grid-2col {
@@ -1625,12 +1656,13 @@
 }
 
 .modal-form-footer {
-  padding: 1.2rem 2rem;
+  padding: 1.1rem 2rem;
   border-top: 1px solid #eaeaea;
   background-color: #fafafa;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .btn-secondary {
@@ -1842,28 +1874,168 @@
   transform: translateX(2px);
 }
 
-/* Responsive adjustments */
+/* =========================================
+   DESKTOP COMPATIBILITY (WIDE SCREENS)
+   ========================================= */
+@media (min-width: 1200px) {
+  .admin-container {
+    max-width: 1280px;
+  }
+
+  .watchlist-table th,
+  .watchlist-table td {
+    padding: 1rem 1.25rem;
+  }
+
+  .table-cues-cell {
+    max-width: 360px;
+  }
+
+  .table-action-cell {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-container {
+    max-width: 1400px;
+    padding: 3rem 4.5rem;
+  }
+
+  .patient-status-grid-minimal {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .calendar-cell {
+    min-height: 105px;
+  }
+}
+
+/* =========================================
+   MOBILE WEB COMPATIBILITY (SMARTPHONES & TABLETS)
+   ========================================= */
 @media (max-width: 768px) {
   .admin-container {
-    padding: 1.5rem;
+    padding: 1.2rem 1rem;
+    gap: 1.3rem;
   }
-  
+
+  .admin-page-title {
+    font-size: 1.6rem;
+  }
+
+  .admin-subtitle {
+    font-size: 0.86rem;
+  }
+
+  .admin-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .timeline-view-switch-wrapper {
+    width: 100%;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+
+  .timeline-segmented-pills {
+    flex: 1;
+  }
+
+  .timeline-seg-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.38rem 0.5rem;
+    font-size: 0.76rem;
+  }
+
   .calendar-cell {
     aspect-ratio: 1;
-    min-height: 52px;
-    padding: 0.35rem;
+    min-height: 50px;
+    padding: 0.3rem;
   }
-  
+
+  .cell-day-number {
+    font-size: 0.72rem;
+  }
+
   .cell-event-time {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
   }
-  
+
+  .cell-event-patient {
+    display: none;
+  }
+
+  /* Trigger Edit & Patient Detail Modals Screen Fitting */
+  .detail-modal-overlay {
+    padding: 0.5rem;
+  }
+
   .detail-modal-card,
   .edit-trigger-modal-card {
-    max-height: 95vh;
+    max-height: 94vh;
+    border-radius: 12px;
+    width: 100%;
+  }
+
+  .detail-modal-header {
+    padding: 1rem 1.2rem;
+  }
+
+  .patient-modal-name {
+    font-size: 1.25rem;
+  }
+
+  .modal-form-body {
+    padding: 1rem 1.2rem;
+    gap: 0.85rem;
   }
 
   .form-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .modal-form-footer {
+    padding: 0.85rem 1.2rem;
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+  }
+
+  .modal-form-footer > div {
+    width: 100%;
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .modal-form-footer button {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .patient-status-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .status-search-box {
+    width: 100%;
+  }
+
+  .status-pills-bar {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.3rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .patient-status-grid-minimal {
     grid-template-columns: 1fr;
   }
 }
