@@ -1,0 +1,1869 @@
+/* Admin Page Styles */
+.admin-container {
+  padding: 2.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  max-width: 1080px;
+  width: 100%;
+}
+
+.admin-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-page-title {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  color: #1a1a1a;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-subtitle {
+  font-size: 0.95rem;
+  color: #666666;
+  margin-top: 0.2rem;
+}
+
+.patient-filter-select {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #222222;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.patient-filter-select:focus {
+  border-color: var(--primary-color);
+}
+
+/* Sidebar navigation - Matches Booking Sidebar strictly */
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sidebar-nav-btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  text-align: center;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #222222;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar-nav-btn:hover {
+  background-color: #e5e5e5;
+}
+
+.sidebar-nav-btn.active {
+  background-color: #e2e2e2;
+  font-weight: 600;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Calendar Card */
+.calendar-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 1.8rem 2.2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.6rem;
+}
+
+.month-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+
+.cal-nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cal-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #eaeaea;
+  background-color: #f7f7f7;
+  color: #555555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cal-arrow-btn:hover {
+  background-color: #ebebeb;
+  color: #111111;
+  border-color: #d5d5d5;
+}
+
+/* Weekday Labels */
+.weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+
+.weekday-col {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #888888;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.calendar-cell {
+  aspect-ratio: 1.3 / 1;
+  min-height: 76px;
+  border-radius: 9px;
+  padding: 0.55rem 0.65rem;
+  background-color: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.calendar-cell.empty-cell {
+  background-color: #f3f3f3;
+  opacity: 0.6;
+}
+
+.calendar-cell.has-date {
+  cursor: pointer;
+}
+
+.calendar-cell.has-date:hover {
+  background-color: #e4e4e4;
+  transform: translateY(-1px);
+}
+
+.cell-day-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #444444;
+  text-align: left;
+}
+
+/* Highlighted Active Event Days */
+.calendar-cell.has-event {
+  background-color: #485937; /* Olive green like reference screenshot */
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(72, 89, 55, 0.25);
+}
+
+.calendar-cell.has-event .cell-day-number {
+  color: #ffffff;
+}
+
+.calendar-cell.has-event:hover {
+  background-color: #3e4f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(72, 89, 55, 0.35);
+}
+
+.cell-event-time {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 0.15rem;
+}
+
+.cell-event-patient {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #e2ecd9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-risk-indicator {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow: 0 0 4px #ef4444;
+}
+
+/* Upcoming Section */
+.upcoming-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 1.8rem 2.2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.upcoming-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1.2rem;
+}
+
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.upcoming-item-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upcoming-item-bar:hover {
+  background-color: #eaeaea;
+  border-color: #dcdcdc;
+  transform: translateX(2px);
+}
+
+.upcoming-item-left {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.upcoming-badge-square {
+  width: 44px;
+  height: 44px;
+  background-color: #485937;
+  color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.upcoming-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.upcoming-line-text {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #222222;
+}
+
+.upcoming-meta-sub {
+  font-size: 0.82rem;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Color Indicator Pills without emojis */
+.risk-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.risk-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.risk-pill.high {
+  background-color: #fde8e8;
+  color: #bc2c2c;
+  border: 1px solid #f8b4b4;
+}
+
+.risk-pill.high .risk-dot {
+  background-color: #dc2626;
+}
+
+.risk-pill.moderate {
+  background-color: #fef08a;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.risk-pill.moderate .risk-dot {
+  background-color: #d97706;
+}
+
+.risk-pill.stable {
+  background-color: #def7ec;
+  color: #03543f;
+  border: 1px solid #bcf0da;
+}
+
+.risk-pill.stable .risk-dot {
+  background-color: #10b981;
+}
+
+.upcoming-action-hint {
+  font-size: 0.85rem;
+  color: #555555;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* =========================================
+   DETAIL MODAL / EXPANDED CLINICAL PANEL
+   ========================================= */
+.detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.detail-modal-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 960px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: modalFadeIn 0.22s ease-out;
+}
+
+.edit-trigger-modal-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 760px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: modalFadeIn 0.22s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal Header - Minimalist & Airy (Inspired by Home & AI Chat) */
+.detail-modal-header {
+  padding: 1.6rem 2.2rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #ffffff;
+}
+
+.patient-header-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.patient-modal-name {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* Minimalist Risk Badge (Inspired by Home page pill badge) */
+.minimal-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.minimal-risk-badge.high {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.minimal-risk-badge.moderate {
+  background-color: #fefce8;
+  border-color: #fef08a;
+  color: #854d0e;
+}
+
+.minimal-risk-badge.stable {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.patient-modal-meta-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.modal-close-btn {
+  background: none;
+  border: 1px solid #e2e8f0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* Minimalist Clinical Insight Callout (Replaces loud red banner) */
+.minimal-insight-card {
+  margin: 1.4rem 2.2rem 0.2rem 2.2rem;
+  padding: 1rem 1.4rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3.5px solid #0f172a;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.insight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.insight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.insight-urgency {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.insight-desc {
+  font-size: 0.86rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+/* Modal Body Tabs */
+.modal-tabs-nav {
+  display: flex;
+  padding: 0 2.2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #ffffff;
+  gap: 0.5rem;
+}
+
+.modal-tab-btn {
+  padding: 0.95rem 1.1rem;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-tab-btn:hover {
+  color: #0f172a;
+}
+
+.modal-tab-btn.active {
+  color: #0f172a;
+  border-bottom-color: #0f172a;
+}
+
+.detail-modal-body {
+  padding: 1.8rem 2.2rem 2.4rem 2.2rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+/* Section Kicker Headers */
+.minimal-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.minimal-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.minimal-section-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.minimal-count-pill {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #64748b;
+  background-color: #f1f5f9;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+}
+
+/* Minimalist Relapse Stage & Risk Gauge Card */
+.minimal-gauge-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.stage-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.minimal-gauge-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 0.15rem;
+}
+
+.gauge-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.gauge-big-num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.gauge-big-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.minimal-progress-track {
+  width: 100%;
+  height: 7px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.minimal-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #0f172a;
+  transition: width 0.4s ease;
+}
+
+.minimal-progress-fill.high {
+  background-color: #b91c1c;
+}
+
+.minimal-progress-fill.moderate {
+  background-color: #d97706;
+}
+
+.minimal-progress-fill.stable {
+  background-color: #10b981;
+}
+
+.stage-steps-legend.minimal-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: #64748b;
+  padding-top: 0.1rem;
+}
+
+.legend-step.current-step {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Minimalist Root Triggers Cards (Floating, clean, un-boxed) */
+.minimal-triggers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.minimal-trigger-item {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 0.85rem 1.2rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.minimal-trigger-item:hover {
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+}
+
+.trigger-index-num {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.trigger-text {
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Minimalist 4-Dimensional Symptom Analysis Grid */
+.minimal-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.minimal-matrix-col {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.col-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.col-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.minimal-symptom-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.minimal-symptom-card .risk-dot {
+  margin-top: 5px;
+}
+
+/* Conversation Transcript Section (Inspired by AI Chat) */
+.conversation-transcript-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.transcript-message-item {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  gap: 0.35rem;
+}
+
+.transcript-message-item.patient {
+  align-self: flex-start;
+}
+
+.transcript-message-item.care {
+  align-self: flex-end;
+}
+
+.message-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.transcript-message-item.care .message-meta-row {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  padding: 0.95rem 1.3rem;
+  border-radius: 12px;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.transcript-message-item.patient .message-bubble {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-bottom-left-radius: 2px;
+  border: 1px solid #e2e8f0;
+}
+
+.transcript-message-item.care .message-bubble {
+  background-color: #1e293b;
+  color: #ffffff;
+  border-bottom-right-radius: 2px;
+}
+
+/* Minimalist Flagged Relapse Badge */
+.flagged-relapse-badge {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #991b1b;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+  width: fit-content;
+}
+
+.flagged-relapse-badge .risk-dot {
+  background-color: #dc2626;
+}
+
+/* Clinical Action Center - Minimalist Card */
+.clinical-action-center {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.action-center-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.action-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.btn-escalate {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 0.65rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-escalate:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.btn-urgent-session {
+  background-color: #485937;
+  color: #ffffff;
+  padding: 0.65rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-urgent-session:hover {
+  background-color: #3b4b2c;
+  transform: translateY(-1px);
+}
+
+.btn-care-note {
+  background-color: #ffffff;
+  color: #334155;
+  padding: 0.65rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: 1.5px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-care-note:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.clinician-note-input {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: #222222;
+  resize: vertical;
+  outline: none;
+}
+
+.clinician-note-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* =========================================
+   AI WATCHLIST TAB STYLES (TABLE FORM & CRUD)
+   ========================================= */
+.watchlist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.watchlist-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+}
+
+.stat-metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.3rem 1.4rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #777777;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #111111;
+}
+
+.stat-desc {
+  font-size: 0.8rem;
+  color: #888888;
+}
+
+/* Table Card Container */
+.watchlist-table-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.table-header-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.category-pill-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e2e2;
+  background-color: #f7f7f7;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #555555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-pill-btn:hover {
+  background-color: #ededed;
+  color: #111111;
+}
+
+.category-pill-btn.active {
+  background-color: #222222;
+  color: #ffffff;
+  border-color: #222222;
+}
+
+.table-search-and-add {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.watchlist-search-input {
+  padding: 0.55rem 1rem;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  min-width: 220px;
+  outline: none;
+}
+
+.watchlist-search-input:focus {
+  border-color: var(--primary-color);
+}
+
+.btn-add-trigger {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.15rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn-add-trigger:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Top Slider Table Wrapper - Places horizontal scrollbar/slider directly at the TOP */
+.admin-table-top-slider-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  transform: rotateX(180deg);
+  margin-top: 0.6rem;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.admin-table-top-slider-wrapper > table {
+  transform: rotateX(180deg);
+  width: 100%;
+}
+
+.watchlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.watchlist-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: #888888;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid #eeeeee;
+  letter-spacing: 0.04em;
+  background-color: #fafafa;
+}
+
+.watchlist-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.88rem;
+  color: #333333;
+  vertical-align: middle;
+}
+
+.watchlist-table tr:hover td {
+  background-color: #fbfbfb;
+}
+
+.watchlist-table tr.paused td {
+  opacity: 0.6;
+}
+
+.table-trigger-name {
+  font-weight: 700;
+  color: #1a1a1a;
+  font-size: 0.93rem;
+  display: block;
+}
+
+.table-cues-cell {
+  max-width: 280px;
+  font-size: 0.82rem;
+  color: #666666;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.table-action-cell {
+  max-width: 240px;
+  font-size: 0.82rem;
+  color: #444444;
+}
+
+/* Actions Column with Eye Button */
+.table-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.icon-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #555555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.icon-action-btn:hover {
+  background-color: #f2f2f2;
+  color: #111111;
+  border-color: #ccc;
+}
+
+.icon-action-btn.eye-btn:hover {
+  background-color: #edf5ea;
+  color: #3b5a35;
+  border-color: #c0d8b9;
+}
+
+.icon-action-btn.delete-btn:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.status-toggle-pill {
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-toggle-pill.active {
+  background-color: #e6f4ea;
+  color: #137333;
+  border-color: #b7e1cd;
+}
+
+.status-toggle-pill.paused {
+  background-color: #f1f3f4;
+  color: #5f6368;
+  border-color: #dadce0;
+}
+
+/* Sleek Uncluttered Timeline View Switcher */
+.timeline-view-switch-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background-color: #ffffff;
+  padding: 0.3rem 0.45rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-segmented-pills {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border-radius: 7px;
+  padding: 2.5px;
+  gap: 2px;
+}
+
+.timeline-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.timeline-seg-btn:hover:not(.active) {
+  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.timeline-seg-btn.active {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.timeline-seg-btn.active svg {
+  color: #485937;
+}
+
+.seg-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 0.35rem;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.timeline-seg-btn.active .seg-badge {
+  background-color: #edf5ea;
+  color: #485937;
+}
+
+.timeline-stepper-arrows {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-left: 0.35rem;
+  border-left: 1px solid #e2e8f0;
+}
+
+.stepper-arrow-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stepper-arrow-btn:hover:not(:disabled) {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.stepper-arrow-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #f1f5f9;
+}
+
+.stepper-counter {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  padding: 0 0.15rem;
+  min-width: 28px;
+  text-align: center;
+  user-select: none;
+}
+
+/* Inspect Details Action Button in Sessions Table */
+.btn-inspect-timeline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-inspect-timeline:hover {
+  background-color: #485937;
+  border-color: #485937;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(72, 89, 55, 0.2);
+}
+
+/* Table Pagination Footer (Limits row count per table) */
+.table-pagination-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  margin-top: 0.6rem;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.pagination-info {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.45rem 0.95rem;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  background-color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.pagination-page-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  padding: 0 0.5rem;
+}
+
+/* Edit Trigger Details Modal Form */
+.modal-form-body {
+  padding: 1.8rem 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+/* Creator Form Card - Spacious Symmetrical 2-Column Grid */
+.watchlist-creator-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 2rem 2.4rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.creator-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1rem;
+}
+
+.creator-card-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+.creator-card-subheading {
+  font-size: 0.86rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.creator-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem 1.8rem;
+}
+
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.01em;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(78, 110, 72, 0.16);
+}
+
+.form-hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.creator-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.2rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 0.4rem;
+}
+
+.creator-status-badge {
+  font-size: 0.82rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.creator-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.btn-primary-brand {
+  background-color: #485937;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(72, 89, 55, 0.2);
+}
+
+.btn-primary-brand:hover {
+  background-color: #3b4b2c;
+  box-shadow: 0 4px 10px rgba(72, 89, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+.modal-form-footer {
+  padding: 1.2rem 2rem;
+  border-top: 1px solid #eaeaea;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #444444;
+  border: 1px solid #cccccc;
+  padding: 0.65rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #f0f0f0;
+}
+
+.btn-danger-outline {
+  background-color: transparent;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  padding: 0.65rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+  background-color: #fee2e2;
+}
+
+/* =========================================
+   PATIENT STATUS TAB STYLES - MINIMALIST
+   ========================================= */
+.patient-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.patient-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+.patient-status-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.6rem 1.8rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.patient-status-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.status-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.status-patient-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.status-patient-meta {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+/* Milestone highlight box (Clean metric display) */
+.status-milestone-box {
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.milestone-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.milestone-number {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.milestone-unit {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.milestone-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.milestone-score-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.milestone-score-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Info lines */
+.status-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.status-condition-chip {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  width: fit-content;
+  border: 1px solid #e2e8f0;
+}
+
+.status-care-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.care-doctor {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.care-stage {
+  font-weight: 600;
+}
+
+.status-card-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.status-session-time {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.status-action-link {
+  background: none;
+  border: none;
+  color: #0f172a;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.status-action-link:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+  transform: translateX(2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1.5rem;
+  }
+  
+  .calendar-cell {
+    aspect-ratio: 1;
+    min-height: 52px;
+    padding: 0.35rem;
+  }
+  
+  .cell-event-time {
+    font-size: 0.68rem;
+  }
+  
+  .detail-modal-card,
+  .edit-trigger-modal-card {
+    max-height: 95vh;
+  }
+
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}

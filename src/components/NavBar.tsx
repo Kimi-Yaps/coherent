@@ -111,6 +111,12 @@ const NavBar = () => {
         >
           Bookings
         </Link>
+        <Link 
+          to="/admin" 
+          className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+        >
+          Admin
+        </Link>
       </div>
       
       <div className="navbar-actions" ref={dropdownRef}>

@@ -10,6 +10,7 @@ const Chats = lazy(() => import('./pages/Chats'));
 const Bookings = lazy(() => import('./pages/Bookings'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Profile = lazy(() => import('./pages/Profile'));
+const Admin = lazy(() => import('./pages/Admin'));
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="calendar" element={<Bookings defaultTab="calendar" />} />
             <Route path="faq" element={<FAQ />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="admin" element={<Admin />} />
           </Route>
         </Routes>
       </Suspense>
