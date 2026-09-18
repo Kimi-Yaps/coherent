@@ -109,6 +109,7 @@ const NavBar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAdminDesktopNotice, setShowAdminDesktopNotice] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -117,6 +118,7 @@ const NavBar = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setShowNotifications(false);
+    setShowAdminDesktopNotice(false);
   }, [location.pathname]);
 
   // Lock body scroll when mobile menu is full-screen
@@ -203,6 +205,12 @@ const NavBar = () => {
           <Link 
             to="/admin" 
             className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+            onClick={(e) => {
+              if (window.innerWidth <= 860) {
+                e.preventDefault();
+                setShowAdminDesktopNotice(true);
+              }
+            }}
           >
             Admin
           </Link>
@@ -330,9 +338,16 @@ const NavBar = () => {
                 return (
                   <Link
                     key={item.path}
-                    to={item.path}
+                    to={item.name === 'Admin' ? '#' : item.path}
                     className={`mobile-nav-item ${active ? 'active' : ''}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      if (item.name === 'Admin') {
+                        e.preventDefault();
+                        setShowAdminDesktopNotice(true);
+                      } else {
+                        setIsMobileMenuOpen(false);
+                      }
+                    }}
                   >
                     <div className="mobile-nav-item-left">
                       <span className="mobile-nav-icon">{item.icon}</span>
@@ -378,6 +393,41 @@ const NavBar = () => {
           </div>
         </div>
       </div>
+
+      {/* Desktop Access Required Popout Modal for Admin on Mobile */}
+      {showAdminDesktopNotice && (
+        <div className="desktop-notice-overlay" onClick={() => setShowAdminDesktopNotice(false)}>
+          <div className="desktop-notice-modal" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="desktop-notice-close-btn" 
+              onClick={() => setShowAdminDesktopNotice(false)}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <div className="desktop-notice-icon-box">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <h3 className="desktop-notice-title">Access Through Computer</h3>
+            <p className="desktop-notice-desc">
+              The Admin & Clinical Relapse Management portal is designed exclusively for computer screens to review transcripts, clinical analytics, and risk factors safely.
+            </p>
+            <div className="desktop-notice-highlight">
+              <span>💻</span> Please log in to your account from a desktop or laptop computer.
+            </div>
+            <button 
+              className="desktop-notice-btn"
+              onClick={() => setShowAdminDesktopNotice(false)}
+            >
+              Understood
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

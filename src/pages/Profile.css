@@ -116,13 +116,20 @@
 }
 
 /* Mobile Web Compatibility */
-@media (max-width: 768px) {
+@media (max-width: 860px) {
+  /* Remove the redundant profile settings sidebar above the title on mobile */
+  .profile-layout .sidebar,
+  .profile-sidebar {
+    display: none !important;
+  }
+
   .profile-container {
-    padding: 1.4rem 1rem;
+    padding: 1.4rem 1.15rem;
+    max-width: 100%;
   }
 
   .profile-page-header {
-    font-size: 1.7rem;
+    font-size: 1.8rem;
     margin-bottom: 1.2rem;
   }
 

@@ -694,3 +694,132 @@
     color: #8c531b;
   }
 }
+
+/* ==========================================================================
+   Desktop Access Required Notice Modal (For Admin on Mobile)
+   ========================================================================== */
+/* ==========================================================================
+   Desktop Access Required Notice Popout (For Admin on Mobile)
+   ========================================================================== */
+.desktop-notice-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100005 !important; /* Higher than .mobile-fullscreen-menu (9999) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: fadeInNotice 0.2s ease forwards;
+}
+
+.desktop-notice-modal {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 380px;
+  padding: 2.2rem 1.6rem 1.8rem 1.6rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: scaleUpNotice 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.desktop-notice-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-notice-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.desktop-notice-icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #f0fdf4;
+  border: 1.5px solid #dcfce7;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+}
+
+.desktop-notice-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.55rem 0;
+  letter-spacing: -0.01em;
+}
+
+.desktop-notice-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 1.1rem 0;
+}
+
+.desktop-notice-highlight {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.45;
+  margin: 0 0 1.4rem 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.desktop-notice-btn {
+  width: 100%;
+  padding: 0.85rem 1.4rem;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.desktop-notice-btn:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInNotice {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpNotice {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}

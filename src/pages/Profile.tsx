@@ -21,7 +21,7 @@ const Profile = () => {
   );
 
   return (
-    <SidebarLayout sidebarContent={sidebarContent}>
+    <SidebarLayout sidebarContent={sidebarContent} className="profile-layout">
       <div className="profile-container">
         <h1 className="display-header profile-page-header">Profile settings</h1>
         
