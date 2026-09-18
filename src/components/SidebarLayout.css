@@ -6,7 +6,7 @@
 }
 
 .sidebar {
-  width: 230px;
+  width: clamp(280px, 24vw, 340px);
   background-color: #ffffff;
   padding: 1.8rem 1.4rem;
   display: flex;
@@ -25,14 +25,82 @@
   min-width: 0;
 }
 
-/* Mobile Web Compatibility */
+/* Mobile Web Compatibility - WhatsApp UI/UX Paradigm */
 @media (max-width: 860px) {
   .sidebar-layout {
+    display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 60px);
+    height: calc(100dvh - 62px);
+    overflow: hidden;
+    position: relative;
   }
 
-  .sidebar {
+  /* When inside active chat: hide sidebar completely, chat takes full screen, input box at very bottom */
+  .sidebar-layout.mobile-view-chat .sidebar {
+    display: none !important;
+  }
+
+  .sidebar-layout.mobile-view-chat .content-area {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* When viewing all chats list: sidebar takes full screen, content area hidden */
+  .sidebar-layout.mobile-view-list .sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 1rem !important;
+    border: none !important;
+    position: static !important;
+    z-index: auto !important;
+    box-shadow: none !important;
+    background-color: #ffffff !important;
+  }
+
+  .sidebar-layout.mobile-view-list .content-area {
+    display: none !important;
+  }
+
+  .sidebar-layout.mobile-view-list .ai-sidebar,
+  .sidebar-layout.mobile-view-list .peer-chats-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+  }
+
+  .sidebar-layout.mobile-view-list .chat-list,
+  .sidebar-layout.mobile-view-list .peer-contacts-list {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.6rem !important;
+    overflow-y: auto !important;
+    padding-bottom: 5.5rem !important;
+  }
+
+  .sidebar-layout.mobile-view-list .ai-session-item,
+  .sidebar-layout.mobile-view-list .peer-contact-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: flex !important;
+    white-space: normal !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Default for other pages without isMobileViewingChat */
+  .sidebar-layout:not(.mobile-view-list):not(.mobile-view-chat) .sidebar {
     width: 100%;
     padding: 0.5rem 0.85rem;
     border-right: none;
@@ -42,42 +110,22 @@
     -webkit-overflow-scrolling: touch;
     gap: 0.45rem;
     position: sticky;
-    top: 72px;
+    top: 0;
     z-index: 40;
     background-color: #ffffff;
-    box-sizing: border-box;
     scrollbar-width: none;
   }
 
-  .sidebar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .bookings-sidebar,
-  .peer-chats-sidebar,
-  .ai-sidebar {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    width: 100% !important;
-    gap: 0.45rem !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none;
-  }
-
-  .chat-list {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 0.45rem !important;
-    margin: 0 !important;
+  .sidebar-layout:not(.mobile-view-list):not(.mobile-view-chat) .content-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    width: 100%;
   }
 
   .sidebar-nav-btn,
   .peer-contact-btn,
-  .sidebar-btn,
-  .new-chat-btn {
+  .sidebar-btn {
     width: auto !important;
     min-width: 0 !important;
     flex: 0 0 auto !important;
@@ -93,9 +141,5 @@
     box-sizing: border-box !important;
     box-shadow: none !important;
   }
-
-  .content-area {
-    width: 100%;
-    min-width: 0;
-  }
 }
+
