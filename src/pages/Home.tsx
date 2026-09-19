@@ -73,14 +73,15 @@ const Home = () => {
             <span className="card-text">Feel better after the session</span>
           </div>
           <div className="divider"></div>
-          <div 
+          <button 
+            type="button"
             className="card-item clickable" 
             onClick={() => navigate('/ai-support')}
             title="Talk to Chatbot Assistant"
           >
             <span className="emoji">🤖</span>
             <span className="card-text">Chatbot Assistant</span>
-          </div>
+          </button>
           <div className="divider"></div>
           <div className="card-item">
             <span className="hours-badge">24/7</span>

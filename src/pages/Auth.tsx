@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { type UserRole } from '../services/authService';
+import { useAuth } from '../context/useAuth';
 import logoIcon from '../assets/Logo.svg';
 import './Auth.css';
 
@@ -19,7 +18,6 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [role, setRole] = useState<UserRole>('patient');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +48,7 @@ const Auth = () => {
           throw new Error('Password must be at least 6 characters.');
         }
         const userHandle = username || email.split('@')[0];
-        await signUp(email, password, name, userHandle, role);
+        await signUp(email, password, name, userHandle, 'patient');
       }
 
       navigate(from, { replace: true });
@@ -151,25 +149,6 @@ const Auth = () => {
                 />
               </div>
 
-              <div className="auth-field">
-                <label>I am joining as:</label>
-                <div className="role-options">
-                  <div
-                    className={`role-pill ${role === 'patient' ? 'selected' : ''}`}
-                    onClick={() => setRole('patient')}
-                  >
-                    <span className="role-icon">🌱</span>
-                    <span className="role-name">Client / Member</span>
-                  </div>
-                  <div
-                    className={`role-pill ${role === 'counselor' ? 'selected' : ''}`}
-                    onClick={() => setRole('counselor')}
-                  >
-                    <span className="role-icon">🩺</span>
-                    <span className="role-name">Counselor / Peer</span>
-                  </div>
-                </div>
-              </div>
             </>
           )}
 
@@ -207,11 +186,6 @@ const Auth = () => {
               : 'Create Account'}
           </button>
         </form>
-
-        {/* Special Admin Gateway Link */}
-        <div className="admin-gateway-link">
-          Clinical Staff & Relapse Desk? <Link to="/admin-portal">Go to Special Admin Portal ›</Link>
-        </div>
       </div>
     </div>
   );

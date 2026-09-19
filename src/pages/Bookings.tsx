@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
+import { useNotifications } from '../context/useNotifications';
 import './Bookings.css';
 
 interface BookingsProps {
@@ -43,10 +44,12 @@ const rescheduleSessions = [
   { id: 's3', date: '25 Sep', time: '09:00', counselor: 'Nadia Rahman', status: 'Scheduled' }
 ];
 
+
 const Bookings = ({ defaultTab }: BookingsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as 'booking' | 'calendar' | 'reschedule') || defaultTab || 'booking';
   const [activeTab, setActiveTab] = useState<'booking' | 'calendar' | 'reschedule'>(initialTab);
+  const { addNotification } = useNotifications();
 
   // Booking state
   const [selectedListener, setSelectedListener] = useState('Amelia Chen');
@@ -66,32 +69,52 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
 
   const handleMoveSession = () => {
     setRescheduleNotice(`Session successfully moved to ${rescheduleTime}!`);
+    addNotification({
+      icon: '🔄',
+      title: 'Session Rescheduled',
+      description: `Your session was moved to ${rescheduleTime}.`,
+      link: '/bookings?tab=calendar',
+      category: 'booking',
+    });
     setTimeout(() => setRescheduleNotice(''), 4000);
   };
 
   const handleConfirmBooking = () => {
     setBookingConfirmed(true);
+    addNotification({
+      icon: '🗓️',
+      title: 'Booking Confirmed',
+      description: `Session with ${selectedListener} confirmed for ${selectedDay} at ${selectedTime}.`,
+      link: '/bookings?tab=calendar',
+      category: 'booking',
+    });
     setTimeout(() => setBookingConfirmed(false), 4000);
   };
 
   const sidebarContent = (
     <div className="bookings-sidebar">
+      <div className="claude-sidebar-section-title" style={{ fontSize: '0.74rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0.2rem 0.65rem 0.4rem' }}>
+        Sessions & Schedule
+      </div>
       <button 
         className={`sidebar-nav-btn ${activeTab === 'booking' ? 'active' : ''}`}
         onClick={() => handleTabChange('booking')}
       >
+        <span className="sidebar-nav-bullet" />
         Booking
       </button>
       <button 
         className={`sidebar-nav-btn ${activeTab === 'calendar' ? 'active' : ''}`}
         onClick={() => handleTabChange('calendar')}
       >
+        <span className="sidebar-nav-bullet" />
         Calendar
       </button>
       <button 
         className={`sidebar-nav-btn ${activeTab === 'reschedule' ? 'active' : ''}`}
         onClick={() => handleTabChange('reschedule')}
       >
+        <span className="sidebar-nav-bullet" />
         Reschedule
       </button>
     </div>

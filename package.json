@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "db:seed": "node --env-file=.env scripts/seedFirestore.mjs"
+    "db:seed": "node --env-file=.env scripts/seedFirestore.mjs",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "firebase": "^12.19.0",

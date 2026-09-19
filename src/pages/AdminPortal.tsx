@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import './AdminPortal.css';
 
 const DEFAULT_ADMIN_KEY = 'COHERENT-CLINICAL-2026';
@@ -45,17 +45,10 @@ const AdminPortal = () => {
     }
   };
 
-  const handleBypass = () => {
-    loginAsDemo('clinician_admin');
-    navigate('/admin', { replace: true });
-  };
 
   return (
     <div className="admin-portal-container">
       <div className="admin-portal-card">
-        <div className="admin-portal-badge">
-          <span>🔒 Restricted Access</span>
-        </div>
 
         <h1 className="admin-portal-title">Clinical Desk Gateway</h1>
         <p className="admin-portal-subtitle">
@@ -85,9 +78,6 @@ const AdminPortal = () => {
                 onChange={(e) => setAccessKey(e.target.value)}
                 required
               />
-              <span className="admin-portal-hint">
-                Default key: <code>{DEFAULT_ADMIN_KEY}</code>
-              </span>
             </div>
 
             <button type="submit" className="admin-portal-btn">
@@ -124,13 +114,6 @@ const AdminPortal = () => {
           </form>
         )}
 
-        <div className="admin-portal-divider">
-          <span>or instant evaluation</span>
-        </div>
-
-        <button type="button" className="admin-bypass-btn" onClick={handleBypass}>
-          <span>⚡ Enter as Clinical Admin (One-Click)</span>
-        </button>
 
         <div className="admin-portal-footer">
           <p>

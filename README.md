@@ -8,7 +8,6 @@ A mental health, peer support, and relapse prevention web application built with
 
 - **🏠 Home (`/`)**: Daily wellness overview, quick check-in, and instant care navigation.
 - **🌱 AI Support (`/ai-support`)**: 24/7 empathetic care companion with multi-session history (*Daily Mindfulness*, *Sleep & Relaxation*).
-- **💬 Counselor & Peer Chats (`/chats`)**: Real-time 1-on-1 messaging with certified counselors and peer listeners.
 - **🗓️ Bookings & Calendar (`/bookings`)**: Schedule sessions, view calendar appointments, and reschedule existing sessions.
 - **⚙️ Clinical Relapse Portal (`/admin`)**: Confidential dashboard for clinicians to monitor patient risk scores (0–100), review flagged transcripts, manage the AI Watchlist, and coordinate intervention protocols.
 
@@ -20,7 +19,7 @@ Users can register new accounts, sign in, or test immediately with pre-configure
 
 - **URL**: [`/auth`](https://coherent-d63a8.web.app/auth)
 - **Account Types (Roles)**:
-  - **🌱 Client / Member (`patient`)**: Access to personal daily support, AI companion, peer chats, and appointments.
+  - **🌱 Client / Member (`patient`)**: Access to personal daily support, AI companion, and appointments.
   - **🩺 Counselor / Peer (`counselor`)**: Peer listening, managing consultation slots, and patient dialogue.
   - **⚙️ Clinical Desk (`clinician_admin`)**: Restricted clinical administrative portal access.
 
@@ -40,8 +39,7 @@ To protect sensitive patient recovery data and relapse intervention protocols, *
 ### Accessing the Special Admin Gateway
 
 - **Special Gateway URL**: [`/admin-portal`](https://coherent-d63a8.web.app/admin-portal)
-- **Clinical Access Passkey**: `COHERENT-CLINICAL-2026` *(or `admin2026`)*
-- **Clinician Login**: Sign in with registered `clinician_admin` credentials, or click **"⚡ Enter as Clinical Admin (One-Click)"**.
+- **Clinician Access**: Authenticate with authorized clinician security passkey or registered credentials.
 
 Once authenticated, the user role elevates to `clinician_admin`, unlocking the `/admin` navigation link and clinical tools.
 
@@ -58,7 +56,6 @@ The application connects to **Google Cloud Firestore** (project `coherent-d63a8`
 | **`users`** | Registered user records and RBAC role assignments (`patient`, `counselor`, `clinician_admin`). |
 | **`bookings`** | Consultation appointments and rescheduling state tracking. |
 | **`ai_sessions`** | AI companion session threads and messages. |
-| **`chats`** | Real-time 1-on-1 private messaging channels and messages. |
 | **`clinical_flags`** | Relapse risk evaluations, severity flags, and clinical notes for patient care. |
 | **`notifications`** | In-app alerts delivered to the top navigation bell dropdown. |
 

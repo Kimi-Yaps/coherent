@@ -14,7 +14,6 @@ flowchart TD
         UI_Nav["NavBar & Notification Center<br/>(Bell, Alerts, Badges)"]
         UI_Auth["Sign Up / Auth Modal & Profile<br/>(/profile)"]
         UI_AI["AI Support Companion<br/>(/ai-support)"]
-        UI_Chat["Real-time Peer & Counselor Chats<br/>(/chats)"]
         UI_Book["Booking, Calendar & Reschedule<br/>(/bookings)"]
         UI_Admin["Admin & Clinical Relapse Portal<br/>(/admin)"]
     end
@@ -25,7 +24,6 @@ flowchart TD
 
     subgraph Services ["Backend Microservices"]
         AuthSvc["Auth & Identity Service"]
-        ChatWSSvc["WebSocket Gateway & Chat Service<br/>(Socket.io / ws)"]
         AISvc["AI Care Companion Engine<br/>(LangChain / Gemini API)"]
         WatchlistEngine["Clinical Relapse & Safety Guard<br/>(Pattern Matcher & Evaluator)"]
         BookingSvc["Booking & Scheduling Engine"]
@@ -34,7 +32,7 @@ flowchart TD
 
     subgraph DataStore ["Data & Cache Layer"]
         DB_SQL[("Relational Database (PostgreSQL)<br/>Users, Roles, Bookings, Transcripts")]
-        DB_Redis[("In-Memory Store (Redis)<br/>Pub/Sub, WS Sessions, Online Status")]
+        DB_Redis[("In-Memory Store (Redis)<br/>Pub/Sub, Sessions, Online Status")]
         DB_Vector[("Vector Database / History Store<br/>Semantic Memory & Session Embeddings")]
     end
 
@@ -44,7 +42,6 @@ flowchart TD
     UI_Admin -->|REST / HTTPS| AG
     UI_Nav -->|REST / Polling or SSE| AG
     UI_AI -->|REST / SSE Streaming| AG
-    UI_Chat <-->|WSS Bi-directional| ChatWSSvc
 
     %% Gateway Routing
     AG -->|Auth & Token Check| AuthSvc
@@ -54,9 +51,6 @@ flowchart TD
 
     %% Service to Service & Storage
     AuthSvc --> DB_SQL
-    ChatWSSvc <--> DB_Redis
-    ChatWSSvc -->|Persist Messages| DB_SQL
-    ChatWSSvc -->|Trigger Notifications| NotifSvc
     
     AISvc -->|Fetch History & RAG| DB_Vector
     AISvc -->|Screen Against Triggers| WatchlistEngine
@@ -77,8 +71,8 @@ flowchart TD
 
 | Role | Accessible UI Views | Key Capabilities & Permissions |
 | :--- | :--- | :--- |
-| **Patient / User** | `/`, `/ai-support`, `/chats`, `/bookings`, `/profile` | Initiates chats with counselors, interacts with 24/7 AI care companion, books and reschedules appointments, manages personal profile. **Blocked from `/admin`**. |
-| **Peer / Counselor** | `/`, `/chats`, `/bookings` (as listener), `/profile` | Accepts incoming client chats, manages live status (online/offline), controls consultation availability and session notes. |
+| **Patient / User** | `/`, `/ai-support`, `/bookings`, `/profile` | Interacts with 24/7 AI care companion, books and reschedules appointments, manages personal profile. **Blocked from `/admin`**. |
+| **Peer / Counselor** | `/`, `/bookings` (as listener), `/profile` | Manages consultation availability, scheduled appointments, and session notes. |
 | **Clinical Admin** | `/admin`, `/profile` (Desktop only) | Full access to Relapse Monitoring Calendar, Upcoming Session Table, Patient Risk Scoring (0–100), AI Trigger Watchlist CRUD, and Live Flagged Transcripts. |
 
 ### 2.2 Sign-Up & Role Verification Sequence
@@ -115,49 +109,6 @@ sequenceDiagram
     else Screen width <= 860px (Mobile Device)
         Nav->>User: Open "Access Through Computer" Modal (NavBar requirement)
     end
-```
-
----
-
-## 3. Real-Time Peer & Counselor Chat (`/chats`) via WebSocket
-
-The peer chat system connects patients with certified counselors and peer supporters (e.g., Dr. Amelia Chen, Iman Hakimi, Sachin Kumar). It manages real-time messaging, active presence, delivery receipts, and history hydration.
-
-### 3.1 WebSocket Lifecycle & Data Flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Patient as Patient (Alice)
-    participant ChatUI as Chats.tsx (UI)
-    participant WSS as WebSocket Server
-    participant Redis as Redis (Pub/Sub & Presence)
-    participant DB as PostgreSQL (Chat DB)
-    actor Counselor as Counselor (Iman)
-
-    Note over Patient, Counselor: 1. Connection Handshake & Room Join
-    ChatUI->>WSS: wss://coherent.app/ws/chat?token=<jwt>
-    WSS->>WSS: Verify JWT & extract patient_id
-    WSS->>Redis: SADD online_users patient_id
-    WSS-->>ChatUI: Connection Established (status: online)
-    ChatUI->>WSS: Emit event "join_conversation" { contactId: "iman" }
-    WSS->>Redis: Subscribe socket to channel "room:alice_iman"
-    WSS->>DB: SELECT * FROM chat_messages WHERE room_id = 'alice_iman' ORDER BY created_at ASC
-    DB-->>ChatUI: Deliver recent message history for current active contact
-
-    Note over Patient, Counselor: 2. Message Dispatch & Instant Relay
-    Patient->>ChatUI: Types message & hits Send
-    ChatUI->>ChatUI: Optimistically render message in local UI (status: 'sending')
-    ChatUI->>WSS: Emit "send_message" { recipientId: "iman", text: "How are you?", clientMsgId }
-    
-    WSS->>DB: INSERT INTO chat_messages (sender_id, receiver_id, text, status) VALUES ('alice', 'iman', '...', 'sent')
-    DB-->>WSS: Message saved (msg_id: 1042, timestamp: '10:14 AM')
-    WSS-->>ChatUI: Emit "message_ack" { clientMsgId, msg_id: 1042, status: 'delivered' }
-    
-    WSS->>Redis: PUBLISH "room:alice_iman" { msg_id: 1042, sender: "alice", text: "..." }
-    Redis-->>Counselor: Push message to counselor's active WebSocket connection
-    Counselor->>WSS: Emit "message_read" { msg_id: 1042 }
-    WSS->>DB: UPDATE chat_messages SET status = 'read' WHERE id = 1042
 ```
 
 ---

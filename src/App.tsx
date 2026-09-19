@@ -6,7 +6,6 @@ import './App.css';
 // Lazy loading the page components
 const Home = lazy(() => import('./pages/Home'));
 const AISupport = lazy(() => import('./pages/AISupport'));
-const Chats = lazy(() => import('./pages/Chats'));
 const Bookings = lazy(() => import('./pages/Bookings'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -14,23 +13,61 @@ const Admin = lazy(() => import('./pages/Admin'));
 const Auth = lazy(() => import('./pages/Auth'));
 const AdminPortal = lazy(() => import('./pages/AdminPortal'));
 import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './context/AuthProvider';
+import { NotificationProvider } from './context/NotificationProvider';
+import { ChatQuotaProvider } from './context/ChatQuotaProvider';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Suspense fallback={<div style={{ padding: '2rem' }}>Loading...</div>}>
-          <Routes>
+        <NotificationProvider>
+          <ChatQuotaProvider>
+            <Suspense fallback={<div style={{ padding: '2rem' }}>Loading...</div>}>
+              <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path="ai-support" element={<AISupport />} />
-              <Route path="chats" element={<Chats />} />
-              <Route path="bookings" element={<Bookings defaultTab="booking" />} />
-              <Route path="reschedule" element={<Bookings defaultTab="reschedule" />} />
-              <Route path="calendar" element={<Bookings defaultTab="calendar" />} />
+              <Route 
+                path="ai-support" 
+                element={
+                  <ProtectedRoute>
+                    <AISupport />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="bookings" 
+                element={
+                  <ProtectedRoute>
+                    <Bookings defaultTab="booking" />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="reschedule" 
+                element={
+                  <ProtectedRoute>
+                    <Bookings defaultTab="reschedule" />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="calendar" 
+                element={
+                  <ProtectedRoute>
+                    <Bookings defaultTab="calendar" />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="faq" element={<FAQ />} />
-              <Route path="profile" element={<Profile />} />
+              <Route 
+                path="profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="auth" element={<Auth />} />
               <Route path="admin-portal" element={<AdminPortal />} />
               <Route 
@@ -44,8 +81,10 @@ function App() {
             </Route>
           </Routes>
         </Suspense>
-      </AuthProvider>
-    </BrowserRouter>
+      </ChatQuotaProvider>
+    </NotificationProvider>
+  </AuthProvider>
+</BrowserRouter>
   );
 }
 

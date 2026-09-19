@@ -6,13 +6,13 @@
 }
 
 .sidebar {
-  width: clamp(280px, 24vw, 340px);
-  background-color: #ffffff;
-  padding: 1.8rem 1.4rem;
+  width: clamp(260px, 22vw, 300px);
+  background-color: #fafaf9;
+  padding: 1.1rem 0.85rem;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  border-right: 1px solid #f1f5f9;
+  border-right: 1px solid #ebebeb;
 }
 
 .content-area {
@@ -23,6 +23,23 @@
   flex-direction: column;
   overflow-y: auto;
   min-width: 0;
+}
+
+/* AI Chat Support: strict height lock to prevent input from extending down */
+.sidebar-layout.ai-support-layout {
+  height: calc(100vh - 65px);
+  max-height: calc(100vh - 65px);
+  overflow: hidden;
+}
+
+.sidebar-layout.ai-support-layout .sidebar {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebar-layout.ai-support-layout .content-area {
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Mobile Web Compatibility - WhatsApp UI/UX Paradigm */
@@ -71,6 +88,7 @@
   }
 
   .sidebar-layout.mobile-view-list .ai-sidebar,
+  .sidebar-layout.mobile-view-list .ai-bookings-sidebar,
   .sidebar-layout.mobile-view-list .peer-chats-sidebar {
     display: flex !important;
     flex-direction: column !important;
@@ -80,6 +98,7 @@
   }
 
   .sidebar-layout.mobile-view-list .chat-list,
+  .sidebar-layout.mobile-view-list .ai-chat-nav-scroll,
   .sidebar-layout.mobile-view-list .peer-contacts-list {
     display: flex !important;
     flex-direction: column !important;
@@ -90,6 +109,7 @@
   }
 
   .sidebar-layout.mobile-view-list .ai-session-item,
+  .sidebar-layout.mobile-view-list .ai-nav-chat-btn,
   .sidebar-layout.mobile-view-list .peer-contact-card {
     width: 100% !important;
     min-width: 0 !important;

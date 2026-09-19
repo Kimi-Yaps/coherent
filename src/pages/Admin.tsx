@@ -476,16 +476,13 @@ const Admin = () => {
 
   // CRUD 1: Toggle Active / Paused
   const handleToggleWatchlistActive = (id: string) => {
+    const target = watchlist.find(item => item.id === id);
+    if (!target) return;
+    const nextState = !target.isActive;
     setWatchlist(prev =>
-      prev.map(item => {
-        if (item.id === id) {
-          const nextState = !item.isActive;
-          showToast(`Trigger "${item.name}" is now ${nextState ? 'Active' : 'Paused'}`);
-          return { ...item, isActive: nextState };
-        }
-        return item;
-      })
+      prev.map(item => (item.id === id ? { ...item, isActive: nextState } : item))
     );
+    showToast(`Trigger "${target.name}" is now ${nextState ? 'Active' : 'Paused'}`);
   };
 
   // CRUD 2: Delete
@@ -594,22 +591,28 @@ const Admin = () => {
   // Sidebar matching Booking page sidebar layout & CSS
   const sidebarContent = (
     <div className="bookings-sidebar">
+      <div className="claude-sidebar-section-title" style={{ fontSize: '0.74rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0.2rem 0.65rem 0.4rem' }}>
+        Clinical Administration
+      </div>
       <button
         className={`sidebar-nav-btn ${activeTab === 'timeline' ? 'active' : ''}`}
         onClick={() => setActiveTab('timeline')}
       >
+        <span className="sidebar-nav-bullet" />
         Patient Timeline
       </button>
       <button
         className={`sidebar-nav-btn ${activeTab === 'watchlist' ? 'active' : ''}`}
         onClick={() => setActiveTab('watchlist')}
       >
+        <span className="sidebar-nav-bullet" />
         AI Watchlist
       </button>
       <button
         className={`sidebar-nav-btn ${activeTab === 'patient-status' ? 'active' : ''}`}
         onClick={() => setActiveTab('patient-status')}
       >
+        <span className="sidebar-nav-bullet" />
         Patient Status
       </button>
     </div>
@@ -735,8 +738,16 @@ const Admin = () => {
                       <div
                         key={day}
                         className={`calendar-cell has-date ${hasEvent ? 'has-event' : ''}`}
+                        role={hasEvent ? 'button' : undefined}
+                        tabIndex={hasEvent ? 0 : undefined}
                         onClick={() => {
                           if (hasEvent) {
+                            handleOpenEvent(event);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (hasEvent && (e.key === 'Enter' || e.key === ' ')) {
+                            e.preventDefault();
                             handleOpenEvent(event);
                           }
                         }}

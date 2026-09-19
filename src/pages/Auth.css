@@ -119,45 +119,6 @@
   box-shadow: 0 0 0 3px rgba(78, 110, 72, 0.15);
 }
 
-/* Role Selector pills */
-.role-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.role-pill {
-  padding: 0.75rem 0.5rem;
-  border: 1.5px solid #d9e2d6;
-  border-radius: 10px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.role-pill .role-icon {
-  font-size: 1.25rem;
-}
-
-.role-pill .role-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #444;
-}
-
-.role-pill.selected {
-  border-color: var(--primary-color, #4e6e48);
-  background: #edf5eb;
-}
-
-.role-pill.selected .role-name {
-  color: var(--primary-color, #4e6e48);
-}
-
 /* Submit Button */
 .auth-submit-btn {
   width: 100%;

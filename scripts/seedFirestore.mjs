@@ -253,27 +253,7 @@ async function seedDatabase() {
   });
   console.log('✓ Seeded [ai_sessions] with conversation messages.');
 
-  // 6. Chats Collection (1-on-1 Peer Chat)
-  console.log('\nCreating [chats] collection and messages...');
-  const chatRoomId = 'iman_sachin';
-  const chatRoomRef = doc(db, 'chats', chatRoomId);
-  await setDoc(chatRoomRef, {
-    participantIds: ['demo_patient_iman', 'sachin'],
-    lastMessageText: 'Hello! Feel free to talk about whatever is weighing on you.',
-    updatedAt: serverTimestamp(),
-  });
-
-  const chatMsgRef = doc(db, 'chats', chatRoomId, 'messages', 'msg_init');
-  await setDoc(chatMsgRef, {
-    senderId: 'sachin',
-    receiverId: 'demo_patient_iman',
-    text: 'Hello! Feel free to talk about whatever is weighing on you.',
-    time: '09:30',
-    createdAt: serverTimestamp(),
-  });
-  console.log('✓ Seeded [chats] with real-time peer messages.');
-
-  // 7. Clinical Relapse Flags (Admin Portal)
+  // 6. Clinical Relapse Flags (Admin Portal)
   console.log('\nCreating [clinical_flags] collection...');
   const clinicalFlags = [
     {
@@ -312,7 +292,7 @@ async function seedDatabase() {
   }
   console.log(`✓ Seeded ${clinicalFlags.length} clinical flags.`);
 
-  // 8. Notifications Collection
+  // 7. Notifications Collection
   console.log('\nCreating [notifications] collection...');
   const notifications = [
     {
@@ -328,12 +308,12 @@ async function seedDatabase() {
     {
       id: 'notif_2',
       userId: 'demo_patient_iman',
-      icon: '💬',
-      title: 'Message from Iman Hakimi',
-      description: 'Hey there! How has your day been...',
+      icon: '✨',
+      title: 'Mindfulness Practice',
+      description: 'A 5-minute breathing exercise is ready for you.',
       time: '45m ago',
       read: false,
-      link: '/chats',
+      link: '/ai-support',
     },
     {
       id: 'notif_3',

@@ -1,6 +1,6 @@
 .profile-container {
   padding: 3rem 4rem;
-  max-width: 800px;
+  max-width: 840px;
 }
 
 .profile-page-header {
@@ -14,14 +14,60 @@
 .profile-sidebar {
   display: flex;
   flex-direction: column;
+  gap: 0.55rem;
+}
+
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #374151;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-nav-btn:hover {
+  background-color: #f0f0ef;
+  color: #111827;
+}
+
+.sidebar-nav-btn.active {
+  background-color: #ececec;
+  color: #111827;
+  font-weight: 600;
+}
+
+.sidebar-nav-bullet {
+  width: 6px;
+  height: 6px;
+  border: 1.5px solid #9ca3af;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.sidebar-nav-btn.active .sidebar-nav-bullet {
+  border-color: #111827;
+  background-color: #111827;
 }
 
 .profile-card {
   background-color: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 2.5rem 3rem;
-  max-width: 680px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  max-width: 720px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0ede8;
 }
 
 .profile-header {
@@ -29,53 +75,77 @@
   align-items: center;
   gap: 1.4rem;
   margin-bottom: 2.2rem;
+  padding-bottom: 1.8rem;
+  border-bottom: 1px solid #f3f0ea;
 }
 
 .profile-avatar {
   width: 68px;
   height: 68px;
-  background-color: var(--primary-color);
+  background-color: var(--primary-color, #4e6e48);
   color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   font-size: 1.6rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(78, 110, 72, 0.2);
 }
 
 .profile-info h2 {
   font-size: 1.45rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 }
 
 .username-tag {
   color: #777777;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .profile-role-badge {
   display: inline-block;
   font-size: 0.75rem;
-  padding: 0.18rem 0.55rem;
-  background: #edf5eb;
-  color: #3b5a36;
-  border: 1px solid #cce2c9;
-  border-radius: 4px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
   font-weight: 600;
-  text-transform: uppercase;
+}
+
+.profile-role-badge.admin {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.profile-role-badge.counselor {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.profile-feedback-banner {
+  padding: 0.85rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1.8rem;
+}
+
+.profile-feedback-banner.success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.6rem;
 }
 
 .form-group {
@@ -85,42 +155,308 @@
 }
 
 .form-group label {
-  color: #666666;
+  color: #444444;
   font-size: 0.92rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .form-input {
   padding: 0.85rem 1.1rem;
-  border: 1.5px solid #3a3a3a;
-  border-radius: 8px;
+  border: 1.5px solid #dfdbd4;
+  border-radius: 10px;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.98rem;
   color: #1a1a1a;
   outline: none;
-  background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #faf9f7;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .form-input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(78, 110, 72, 0.2);
+  border-color: var(--primary-color, #4e6e48);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(78, 110, 72, 0.14);
 }
 
+.form-field-hint {
+  font-size: 0.8rem;
+  color: #777777;
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   Warm Home-Inspired Gemini AI Care Companion Card
+   ============================================================ */
+.gemini-companion-section {
+  background: #fafaf8;
+  border: 1.5px solid #ece7df;
+  border-radius: 16px;
+  padding: 1.8rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+}
+
+.gemini-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gemini-section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.get-free-key-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #222222;
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 1px solid #dcd7ce;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.get-free-key-link:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+/* Model Pills Choice */
+.companion-model-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+.model-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.model-select-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  background-color: #ffffff;
+  border: 1.5px solid #dfd9ce;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333333;
+}
+
+.model-select-pill:hover {
+  border-color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.model-select-pill.active {
+  background-color: #222222;
+  color: #ffffff;
+  border-color: #222222;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.model-select-pill .pill-icon {
+  font-size: 0.95rem;
+}
+
+.model-select-pill .pill-name {
+  font-weight: 600;
+}
+
+.model-select-pill .pill-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background-color: #f0ece5;
+  color: #555555;
+  font-weight: 600;
+}
+
+.model-select-pill.active .pill-badge {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.custom-model-box {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.custom-model-field {
+  max-width: 360px;
+}
+
+/* Gemini Key Input Box */
+.gemini-key-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gemini-key-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.gemini-key-input-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+}
+
+.key-input-container {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.key-input-container .form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.key-field {
+  width: 100%;
+  padding-right: 2.8rem;
+  font-family: monospace;
+  letter-spacing: 0.04em;
+  font-size: 0.92rem;
+}
+
+.admin-invite-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  letter-spacing: normal;
+  font-size: 0.95rem;
+}
+
+.key-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: #777777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+
+.key-eye-btn:hover {
+  opacity: 0.75;
+}
+
+.test-connect-btn,
+.invite-admin-action-btn {
+  height: 44px;
+  width: 155px;
+  min-width: 155px;
+  max-width: 155px;
+  flex: 0 0 155px;
+  padding: 0 1rem;
+  background-color: #222222;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.test-connect-btn:hover:not(:disabled),
+.invite-admin-action-btn:hover:not(:disabled) {
+  background-color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.test-connect-btn:disabled,
+.invite-admin-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Key status toast */
+.key-status-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.key-status-card.success {
+  background-color: #edf7ee;
+  color: #256029;
+  border: 1px solid #c8e6c9;
+}
+
+.key-status-card.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.status-dot-icon {
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* Actions */
 .form-actions-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 1rem;
   gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f0ea;
 }
 
 .save-btn {
-  background-color: #1f1f1f;
+  background-color: #222222;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 0.85rem 1.8rem;
+  border-radius: 9999px;
+  padding: 0.85rem 2rem;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -130,58 +466,74 @@
 .save-btn:hover {
   background-color: #000000;
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
 .signout-btn {
   background: transparent;
   color: #b91c1c;
-  border: 1px solid #f87171;
-  border-radius: 8px;
-  padding: 0.8rem 1.5rem;
+  border: 1.5px solid #fca5a5;
+  border-radius: 9999px;
+  padding: 0.8rem 1.6rem;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .signout-btn:hover {
   background-color: #fef2f2;
+  border-color: #ef4444;
 }
 
-/* Mobile Web Compatibility */
-@media (max-width: 860px) {
-  /* Remove the redundant profile settings sidebar above the title on mobile */
-  .profile-layout .sidebar,
-  .profile-sidebar {
-    display: none !important;
-  }
 
+
+.invite-feedback-banner {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.95rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.invite-feedback-banner.success {
+  background-color: #edf7ee;
+  color: #256029;
+  border: 1px solid #c8e6c9;
+}
+
+.invite-feedback-banner.error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 768px) {
   .profile-container {
-    padding: 1.4rem 1.15rem;
-    max-width: 100%;
-  }
-
-  .profile-page-header {
-    font-size: 1.8rem;
-    margin-bottom: 1.2rem;
+    padding: 1.5rem 1rem;
   }
 
   .profile-card {
-    padding: 1.5rem 1.2rem;
+    padding: 1.8rem 1.4rem;
   }
 
-  .profile-header {
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  .gemini-companion-section {
+    padding: 1.4rem 1.2rem;
   }
 
-  .profile-avatar {
-    width: 54px;
-    height: 54px;
-    font-size: 1.3rem;
+  .gemini-key-input-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .save-btn {
+  .form-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-btn,
+  .signout-btn {
+    text-align: center;
     width: 100%;
   }
 }

@@ -53,32 +53,55 @@
 .admin-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.55rem;
+  width: 100%;
 }
 
 .sidebar-nav-btn {
-  display: block;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.65rem !important;
   width: 100%;
-  padding: 0.85rem 1.2rem;
-  text-align: center;
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 6px;
+  padding: 0.45rem 0.75rem !important;
+  text-align: left !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
   font-weight: 500;
-  font-size: 0.95rem;
-  color: #222222;
-  transition: all 0.2s ease;
+  font-size: 0.88rem;
+  color: #374151 !important;
+  transition: all 0.15s ease;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .sidebar-nav-btn:hover {
-  background-color: #e5e5e5;
+  background-color: #f0f0ef !important;
+  color: #111827 !important;
 }
 
 .sidebar-nav-btn.active {
-  background-color: #e2e2e2;
+  background-color: #ececec !important;
+  color: #111827 !important;
   font-weight: 600;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: none !important;
+}
+
+.sidebar-nav-bullet {
+  width: 6px;
+  height: 6px;
+  border: 1.5px solid #9ca3af;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 0;
+  transition: all 0.15s ease;
+}
+
+.sidebar-nav-btn.active .sidebar-nav-bullet {
+  border-color: #111827;
+  background-color: #111827;
 }
 
 /* Calendar Card */
@@ -186,11 +209,11 @@
   text-align: left;
 }
 
-/* Highlighted Active Event Days */
+/* Highlighted Active Event Days - Dark Grey matching PATIENT TIMELINE Header */
 .calendar-cell.has-event {
-  background-color: #485937; /* Olive green like reference screenshot */
+  background-color: #1a1a1a;
   color: #ffffff;
-  box-shadow: 0 3px 8px rgba(72, 89, 55, 0.25);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .calendar-cell.has-event .cell-day-number {
@@ -198,9 +221,9 @@
 }
 
 .calendar-cell.has-event:hover {
-  background-color: #3e4f2f;
+  background-color: #000000;
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(72, 89, 55, 0.35);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.35);
 }
 
 .cell-event-time {
@@ -213,7 +236,7 @@
 .cell-event-patient {
   font-size: 0.72rem;
   font-weight: 500;
-  color: #e2ecd9;
+  color: #d1d5db;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { type UserRole } from '../services/authService';
 
 interface ProtectedRouteProps {
@@ -35,7 +35,7 @@ const ProtectedRoute = ({
   }
 
   // If user must be logged in for general protected routes
-  if (!profile && !localStorage.getItem('coherent_demo_profile')) {
+  if (!profile) {
     return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 
