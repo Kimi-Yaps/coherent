@@ -24,11 +24,8 @@ Users can register new accounts, sign in, or test immediately with pre-configure
   - **🩺 Counselor / Peer (`counselor`)**: Peer listening, managing consultation slots, and patient dialogue.
   - **⚙️ Clinical Desk (`clinician_admin`)**: Restricted clinical administrative portal access.
 
-### Quick Demo Accounts (One-Click Testing)
-On the [`/auth`](https://coherent-d63a8.web.app/auth) screen, you can click any instant demo profile:
-1. **Patient**: Iman Hakimi (`ImanHakimi@gmail.com`)
-2. **Counselor**: Dr. Amelia Chen (`amelia.chen@coherent.care`)
-3. **Clinical Admin**: Clinical Relapse Coordinator (`clinical-desk@coherent.care`)
+### Registering & Signing In
+Users can create their personal account with email, password, and their chosen role on the [`/auth`](https://coherent-d63a8.web.app/auth) screen. Initial seed users created in Firestore (`ImanHakimi@gmail.com`, `amelia.chen@coherent.care`, `clinical-desk@coherent.care`) are available for direct sign in.
 
 ---
 

@@ -8,7 +8,7 @@ import './Auth.css';
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, loginAsDemo, user, profile } = useAuth();
+  const { signIn, signUp, user, profile } = useAuth();
 
   // Determine initial tab from query param (e.g., ?mode=signup)
   const searchParams = new URLSearchParams(location.search);
@@ -65,20 +65,13 @@ const Auth = () => {
         setError('Password should be at least 6 characters.');
       } else if (msg.includes('auth/user-not-found')) {
         setError('No account found with this email. Please sign up.');
+      } else if (msg.includes('auth/configuration-not-found')) {
+        setError('Firebase Authentication is not activated in Console. Please enable "Email/Password" in Firebase Console ➔ Authentication ➔ Sign-in method.');
       } else {
         setError(msg);
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDemoClick = (demoRole: UserRole) => {
-    loginAsDemo(demoRole);
-    if (demoRole === 'clinician_admin') {
-      navigate('/admin', { replace: true });
-    } else {
-      navigate(from, { replace: true });
     }
   };
 
@@ -214,40 +207,6 @@ const Auth = () => {
               : 'Create Account'}
           </button>
         </form>
-
-        {/* Instant Demo Login Divider */}
-        <div className="auth-divider">
-          <span>or test with instant demo profile</span>
-        </div>
-
-        <div className="demo-accounts">
-          <button
-            type="button"
-            className="demo-btn"
-            onClick={() => handleDemoClick('patient')}
-          >
-            <span>🌱 Continue as Patient (Iman Hakimi)</span>
-            <span className="demo-badge">Patient</span>
-          </button>
-
-          <button
-            type="button"
-            className="demo-btn"
-            onClick={() => handleDemoClick('counselor')}
-          >
-            <span>🩺 Continue as Counselor (Dr. Amelia Chen)</span>
-            <span className="demo-badge">Counselor</span>
-          </button>
-
-          <button
-            type="button"
-            className="demo-btn"
-            onClick={() => handleDemoClick('clinician_admin')}
-          >
-            <span>⚙️ Continue as Clinical Admin Desk</span>
-            <span className="demo-badge">Admin</span>
-          </button>
-        </div>
 
         {/* Special Admin Gateway Link */}
         <div className="admin-gateway-link">
