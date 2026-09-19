@@ -101,7 +101,7 @@ const NavBar = () => {
           {isAdmin && (
             <Link
               to="/admin"
-              className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+              className={`nav-link ${location.pathname.startsWith('/admin') || location.pathname.startsWith('/clinical-calendar') || location.pathname.startsWith('/patient-detail') ? 'active' : ''}`}
               onClick={(e) => {
                 if (window.innerWidth <= 860) {
                   e.preventDefault();

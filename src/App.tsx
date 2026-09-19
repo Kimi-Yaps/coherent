@@ -12,6 +12,8 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Auth = lazy(() => import('./pages/Auth'));
 const AdminPortal = lazy(() => import('./pages/AdminPortal'));
+const ClinicalCalendar = lazy(() => import('./pages/ClinicalCalendar'));
+const PatientDetail = lazy(() => import('./pages/PatientDetail'));
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthProvider';
 import { NotificationProvider } from './context/NotificationProvider';
@@ -77,6 +79,22 @@ function App() {
                     <Admin />
                   </ProtectedRoute>
                 } 
+              />
+              <Route
+                path="clinical-calendar"
+                element={
+                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                    <ClinicalCalendar />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="patient-detail"
+                element={
+                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                    <PatientDetail />
+                  </ProtectedRoute>
+                }
               />
             </Route>
           </Routes>

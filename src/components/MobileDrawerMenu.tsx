@@ -61,7 +61,7 @@ const navItems: NavItemConfig[] = [
     icon: '⚙️',
     description: 'Management & platform dashboard',
     adminOnly: true,
-    isActive: (pathname) => pathname.startsWith('/admin'),
+    isActive: (pathname) => pathname.startsWith('/admin') || pathname.startsWith('/clinical-calendar'),
   },
 ];
 

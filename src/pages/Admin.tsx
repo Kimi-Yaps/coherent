@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
+import AdminSidebar from '../components/AdminSidebar';
 import './Admin.css';
 
 interface PatientConversationMessage {
@@ -405,20 +407,527 @@ const patientEventsData: Record<number, PatientSessionEvent> = {
   }
 };
 
+interface PatientChatSession {
+  id: string;
+  day: number;
+  dateStr: string;
+  time: string;
+  topic: string;
+  durationMinutes: number;
+  messageCount: number;
+  riskLevel: 'high' | 'moderate' | 'stable';
+  riskScore: number;
+  triggerCues?: string[];
+  eventRef: PatientSessionEvent;
+}
+
+interface PatientGanttTrack {
+  patientId: string;
+  patientName: string;
+  age: number;
+  primaryCondition: string;
+  recoveryDays: number;
+  assignedClinician: string;
+  avatarColor: string;
+  overallRisk: 'high' | 'moderate' | 'stable';
+  sessions: PatientChatSession[];
+}
+
+const createSessionEvent = (
+  id: string,
+  day: number,
+  time: string,
+  patientName: string,
+  patientId: string,
+  age: number,
+  primaryCondition: string,
+  recoveryDays: number,
+  assignedClinician: string,
+  riskScore: number,
+  riskLevel: 'high' | 'moderate' | 'stable',
+  currentStage: string,
+  triggers: string[],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _topic: string,
+  conversation: PatientConversationMessage[]
+): PatientSessionEvent => ({
+  id,
+  day,
+  dateStr: `${day} Sep 2024`,
+  time,
+  patientName,
+  patientId,
+  age,
+  primaryCondition,
+  recoveryDays,
+  assignedClinician,
+  relapseSymptoms: {
+    riskScore,
+    riskLevel,
+    currentStage,
+    identifiedTriggers: triggers,
+    emotionalSymptoms: [
+      riskLevel === 'high' ? 'Acute anxiety spikes and restlessness (+40% baseline)' : riskLevel === 'moderate' ? 'Mild stress reactivity & emotional fatigue' : 'Balanced mood and calm affect',
+      'Daily affect tracking and somatic self-regulation log'
+    ],
+    cognitiveSymptoms: [
+      riskLevel === 'high' ? 'Intrusive craving thoughts & cognitive bargaining ("Just once won\'t hurt")' : riskLevel === 'moderate' ? 'Fatigue-induced concentration dip' : 'Strong recovery resolve & boundary clarity'
+    ],
+    behavioralSymptoms: [
+      riskLevel === 'high' ? 'Disrupted routine & avoided sponsor check-in' : riskLevel === 'moderate' ? 'Irregular evening sleep schedule' : 'Consistent attendance at peer accountability circles'
+    ],
+    physicalSymptoms: [
+      riskLevel === 'high' ? 'Severe sleep deprivation (<4h) and somatic tension' : riskLevel === 'moderate' ? 'Mild tension headaches from workplace overwork' : 'Normal resting vital signs and restorative sleep'
+    ]
+  },
+  conversation
+});
+
+const patientGanttTracks: PatientGanttTrack[] = [
+  {
+    patientId: 'PT-9042',
+    patientName: 'Amelia Chen',
+    age: 29,
+    primaryCondition: 'Alcohol Use Disorder (Maintenance)',
+    recoveryDays: 42,
+    assignedClinician: 'Dr. Sarah Jenkins',
+    avatarColor: '#2b5a45',
+    overallRisk: 'high',
+    sessions: [
+      {
+        id: 'ac-7',
+        day: 7,
+        dateStr: '7 Sep 2024',
+        time: '09:15',
+        topic: 'Weekend Sobriety Routine & Morning Affirmations',
+        durationMinutes: 12,
+        messageCount: 6,
+        riskLevel: 'stable',
+        riskScore: 22,
+        triggerCues: ['weekend leisure'],
+        eventRef: createSessionEvent(
+          'ac-ev-7', 7, '09:15', 'Amelia Chen', 'PT-9042', 29,
+          'Alcohol Use Disorder (Maintenance)', 42, 'Dr. Sarah Jenkins', 22, 'stable',
+          'Stable Maintenance', ['Social weekend exposure'],
+          'Weekend Sobriety Routine',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Good morning Amelia! How did Friday evening feel for your recovery routine?', time: '09:15' },
+            { id: 2, sender: 'patient', senderName: 'Amelia Chen', text: 'Felt really calm. Did 20 minutes of yoga, made dinner, and slept well without urges.', time: '09:16' },
+            { id: 3, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'That is wonderful progress. Your mindfulness foundation is solid today.', time: '09:17' }
+          ]
+        )
+      },
+      {
+        id: 'ac-14',
+        day: 14,
+        dateStr: '14 Sep 2024',
+        time: '10:30',
+        topic: 'Sudden Layoff & Severe Insomnia Surge (High Alert)',
+        durationMinutes: 28,
+        messageCount: 14,
+        riskLevel: 'high',
+        riskScore: 84,
+        triggerCues: ['corporate restructuring', 'severe insomnia', 'isolation', 'bargaining'],
+        eventRef: patientEventsData[14]
+      },
+      {
+        id: 'ac-21',
+        day: 21,
+        dateStr: '21 Sep 2024',
+        time: '14:00',
+        topic: 'Post-Crisis Stabilization & Coping Practice',
+        durationMinutes: 18,
+        messageCount: 10,
+        riskLevel: 'moderate',
+        riskScore: 54,
+        triggerCues: ['interview anxiety', 'intermittent cravings'],
+        eventRef: createSessionEvent(
+          'ac-ev-21', 21, '14:00', 'Amelia Chen', 'PT-9042', 29,
+          'Alcohol Use Disorder (Maintenance)', 42, 'Dr. Sarah Jenkins', 54, 'moderate',
+          'Stabilization & Vulnerability Monitoring', ['Job interview stress'],
+          'Post-Crisis Stabilization',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Hi Amelia, following up on your distress tolerance drills from last week. How has your sleep been?', time: '14:00' },
+            { id: 2, sender: 'patient', senderName: 'Amelia Chen', text: 'Better, got 6 hours. Still feeling waves of anxiety about sending resumes, but I reached out to my sponsor yesterday.', time: '14:02', flag: 'Anxiety Marker: Resume Submission', severity: 'warning' },
+            { id: 3, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Connecting with your sponsor is a crucial protective action. Let us continue grounding exercises before tomorrow\'s calls.', time: '14:04' }
+          ]
+        )
+      },
+      {
+        id: 'ac-28',
+        day: 28,
+        dateStr: '28 Sep 2024',
+        time: '11:15',
+        topic: 'Sponsor Re-connection & Sleep Hygiene Check',
+        durationMinutes: 15,
+        messageCount: 8,
+        riskLevel: 'stable',
+        riskScore: 30,
+        triggerCues: ['sleep hygiene'],
+        eventRef: createSessionEvent(
+          'ac-ev-28', 28, '11:15', 'Amelia Chen', 'PT-9042', 29,
+          'Alcohol Use Disorder (Maintenance)', 42, 'Dr. Sarah Jenkins', 30, 'stable',
+          'Stable Routine Restored', ['Routine evening triggers managed'],
+          'Sponsor Re-connection & Sleep Hygiene',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Hello Amelia, checking in for your weekly sobriety milestone log.', time: '11:15' },
+            { id: 2, sender: 'patient', senderName: 'Amelia Chen', text: 'Feeling much clearer. Attended my weekly group and celebrated 56 days sober with tea!', time: '11:17' }
+          ]
+        )
+      }
+    ]
+  },
+  {
+    patientId: 'PT-8812',
+    patientName: 'Rafael Ortiz',
+    age: 41,
+    primaryCondition: 'Opioid Use Disorder (Remission)',
+    recoveryDays: 88,
+    assignedClinician: 'Dr. Liam Bennett',
+    avatarColor: '#365314',
+    overallRisk: 'moderate',
+    sessions: [
+      {
+        id: 'ro-9',
+        day: 9,
+        dateStr: '9 Sep 2024',
+        time: '10:00',
+        topic: 'Weekly Pain & Craving Inventory Check',
+        durationMinutes: 14,
+        messageCount: 8,
+        riskLevel: 'stable',
+        riskScore: 25,
+        triggerCues: ['lumbar physical therapy'],
+        eventRef: createSessionEvent(
+          'ro-ev-9', 9, '10:00', 'Rafael Ortiz', 'PT-8812', 41,
+          'Opioid Use Disorder (Remission)', 88, 'Dr. Liam Bennett', 25, 'stable',
+          'Stable Remission', ['Physical therapy soreness'],
+          'Weekly Pain & Craving Inventory',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Good morning Rafael. How has your lumbar comfort felt after yesterday\'s stretches?', time: '10:00' },
+            { id: 2, sender: 'patient', senderName: 'Rafael Ortiz', text: 'Mild soreness but heat therapy helped. Zero cravings, taking ibuprofen as guided.', time: '10:02' }
+          ]
+        )
+      },
+      {
+        id: 'ro-18',
+        day: 18,
+        dateStr: '18 Sep 2024',
+        time: '15:45',
+        topic: 'Overwork Exhaustion & Craving Surge',
+        durationMinutes: 24,
+        messageCount: 12,
+        riskLevel: 'moderate',
+        riskScore: 62,
+        triggerCues: ['14-hour construction shifts', 'back stiffness', 'HALT vulnerability'],
+        eventRef: patientEventsData[18]
+      },
+      {
+        id: 'ro-24',
+        day: 24,
+        dateStr: '24 Sep 2024',
+        time: '16:30',
+        topic: 'Work Boundary Setting & Peer Support',
+        durationMinutes: 16,
+        messageCount: 8,
+        riskLevel: 'stable',
+        riskScore: 32,
+        triggerCues: ['shift boundary negotiation'],
+        eventRef: createSessionEvent(
+          'ro-ev-24', 24, '16:30', 'Rafael Ortiz', 'PT-8812', 41,
+          'Opioid Use Disorder (Remission)', 88, 'Dr. Liam Bennett', 32, 'stable',
+          'Boundary Stabilization', ['Overtime schedule limits'],
+          'Work Boundary Setting & Peer Support',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Afternoon Rafael, how did the shift schedule conversation with your foreman go?', time: '16:30' },
+            { id: 2, sender: 'patient', senderName: 'Rafael Ortiz', text: 'They agreed to cap shifts at 8 hours. Huge relief, my fatigue level is way down.', time: '16:32' }
+          ]
+        )
+      }
+    ]
+  },
+  {
+    patientId: 'PT-7420',
+    patientName: 'Marcus Vance',
+    age: 34,
+    primaryCondition: 'Substance Use Disorder (Polysubstance)',
+    recoveryDays: 114,
+    assignedClinician: 'Dr. Sarah Jenkins',
+    avatarColor: '#1e3a8a',
+    overallRisk: 'moderate',
+    sessions: [
+      {
+        id: 'mv-8',
+        day: 8,
+        dateStr: '8 Sep 2024',
+        time: '11:00',
+        topic: 'Daily Meditation & Routine Log',
+        durationMinutes: 10,
+        messageCount: 6,
+        riskLevel: 'stable',
+        riskScore: 18,
+        triggerCues: ['routine check'],
+        eventRef: createSessionEvent(
+          'mv-ev-8', 8, '11:00', 'Marcus Vance', 'PT-7420', 34,
+          'Substance Use Disorder (Polysubstance)', 114, 'Dr. Sarah Jenkins', 18, 'stable',
+          'Stable Routine', [],
+          'Daily Meditation & Routine Log',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Good morning Marcus! How is your meditation schedule feeling this week?', time: '11:00' },
+            { id: 2, sender: 'patient', senderName: 'Marcus Vance', text: 'Consistent every morning. 15 minutes breathing before looking at my phone.', time: '11:02' }
+          ]
+        )
+      },
+      {
+        id: 'mv-15',
+        day: 15,
+        dateStr: '15 Sep 2024',
+        time: '14:15',
+        topic: 'Workplace Stress & Coping Review',
+        durationMinutes: 12,
+        messageCount: 6,
+        riskLevel: 'stable',
+        riskScore: 24,
+        triggerCues: ['deadline pressure'],
+        eventRef: createSessionEvent(
+          'mv-ev-15', 15, '14:15', 'Marcus Vance', 'PT-7420', 34,
+          'Substance Use Disorder (Polysubstance)', 114, 'Dr. Sarah Jenkins', 24, 'stable',
+          'Stable Coping', ['Quarterly deadline'],
+          'Workplace Stress & Coping Review',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Checking in on your workload this afternoon, Marcus.', time: '14:15' },
+            { id: 2, sender: 'patient', senderName: 'Marcus Vance', text: 'Busy sprint at work, but taking hourly stretch breaks and staying hydrated.', time: '14:17' }
+          ]
+        )
+      },
+      {
+        id: 'mv-22',
+        day: 22,
+        dateStr: '22 Sep 2024',
+        time: '11:15',
+        topic: 'Milestone Euphoric Recall & Craving Surge',
+        durationMinutes: 26,
+        messageCount: 14,
+        riskLevel: 'moderate',
+        riskScore: 58,
+        triggerCues: ['120-day milestone overconfidence', 'euphoric recall', 'social celebration party'],
+        eventRef: patientEventsData[22]
+      },
+      {
+        id: 'mv-29',
+        day: 29,
+        dateStr: '29 Sep 2024',
+        time: '10:45',
+        topic: 'Accountability Partner Re-engagement',
+        durationMinutes: 15,
+        messageCount: 8,
+        riskLevel: 'stable',
+        riskScore: 24,
+        triggerCues: ['peer accountability'],
+        eventRef: createSessionEvent(
+          'mv-ev-29', 29, '10:45', 'Marcus Vance', 'PT-7420', 34,
+          'Substance Use Disorder (Polysubstance)', 114, 'Dr. Sarah Jenkins', 24, 'stable',
+          'Accountability Re-established', [],
+          'Accountability Partner Re-engagement',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Marcus, following up on your sober celebration boundaries.', time: '10:45' },
+            { id: 2, sender: 'patient', senderName: 'Marcus Vance', text: 'Brought my sober friend to the dinner as planned. Left at 9 PM and felt completely in control.', time: '10:47' }
+          ]
+        )
+      }
+    ]
+  },
+  {
+    patientId: 'PT-9931',
+    patientName: 'Elena Rostova',
+    age: 26,
+    primaryCondition: 'Stimulant Use Disorder',
+    recoveryDays: 19,
+    assignedClinician: 'Dr. Michael Vance',
+    avatarColor: '#831843',
+    overallRisk: 'high',
+    sessions: [
+      {
+        id: 'er-11',
+        day: 11,
+        dateStr: '11 Sep 2024',
+        time: '13:00',
+        topic: 'Early Sobriety Anhedonia & Fatigue Check',
+        durationMinutes: 16,
+        messageCount: 8,
+        riskLevel: 'moderate',
+        riskScore: 50,
+        triggerCues: ['dopamine rebound', 'work fatigue'],
+        eventRef: createSessionEvent(
+          'er-ev-11', 11, '13:00', 'Elena Rostova', 'PT-9931', 26,
+          'Stimulant Use Disorder', 19, 'Dr. Michael Vance', 50, 'moderate',
+          'Early Withdrawal / Neuro-adaptation', ['Energy dip', 'Anhedonia'],
+          'Early Sobriety Anhedonia & Fatigue Check',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Hi Elena, how has your focus and physical energy felt throughout the morning?', time: '13:00' },
+            { id: 2, sender: 'patient', senderName: 'Elena Rostova', text: 'Hard to focus on my laptop. Everything takes twice as long without stimulants.', time: '13:02', flag: 'Anhedonia / Cognitive Fatigue', severity: 'warning' },
+            { id: 3, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Your dopamine receptors are actively rebuilding. Short 20-minute focus sprints with walks in between are recommended.', time: '13:04' }
+          ]
+        )
+      },
+      {
+        id: 'er-19',
+        day: 19,
+        dateStr: '19 Sep 2024',
+        time: '16:15',
+        topic: 'Dopamine Rebound Fatigue Log',
+        durationMinutes: 18,
+        messageCount: 10,
+        riskLevel: 'moderate',
+        riskScore: 58,
+        triggerCues: ['late night screen time', 'lethargy'],
+        eventRef: createSessionEvent(
+          'er-ev-19', 19, '16:15', 'Elena Rostova', 'PT-9931', 26,
+          'Stimulant Use Disorder', 19, 'Dr. Michael Vance', 58, 'moderate',
+          'Stage 1: Neurochemical Adjustment', ['Sleep disruption'],
+          'Dopamine Rebound Fatigue Log',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Elena, checking in for your Day 19 afternoon wellness log.', time: '16:15' },
+            { id: 2, sender: 'patient', senderName: 'Elena Rostova', text: 'Fell asleep at 4 AM again last night. Trying hard not to give in to cravings.', time: '16:17', flag: 'Sleep Cycle Inversion', severity: 'warning' }
+          ]
+        )
+      },
+      {
+        id: 'er-25',
+        day: 25,
+        dateStr: '25 Sep 2024',
+        time: '09:30',
+        topic: 'Old Acquaintance Encounter & Intense Craving (High Alert)',
+        durationMinutes: 30,
+        messageCount: 16,
+        riskLevel: 'high',
+        riskScore: 68,
+        triggerCues: ['old party friend encounter', 'crying spells', 'screen time 4 AM'],
+        eventRef: patientEventsData[25]
+      },
+      {
+        id: 'er-30',
+        day: 30,
+        dateStr: '30 Sep 2024',
+        time: '15:00',
+        topic: 'Medical Clinician Triage & Coping Plan Follow-up',
+        durationMinutes: 22,
+        messageCount: 12,
+        riskLevel: 'moderate',
+        riskScore: 46,
+        triggerCues: ['clinician consultation adherence'],
+        eventRef: createSessionEvent(
+          'er-ev-30', 30, '15:00', 'Elena Rostova', 'PT-9931', 26,
+          'Stimulant Use Disorder', 19, 'Dr. Michael Vance', 46, 'moderate',
+          'Post-Triage Clinical Follow-up', ['Social avoidance triggers'],
+          'Medical Clinician Triage & Coping Plan Follow-up',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Hello Elena, following your session with Dr. Vance yesterday, how is your grounding plan holding up?', time: '15:00' },
+            { id: 2, sender: 'patient', senderName: 'Elena Rostova', text: 'We agreed to change my morning coffee route so I don\'t run into that crowd again. Feeling calmer today.', time: '15:02' }
+          ]
+        )
+      }
+    ]
+  },
+  {
+    patientId: 'PT-10024',
+    patientName: 'Iman Hakimi',
+    age: 31,
+    primaryCondition: 'Alcohol Use Disorder (Early Remission)',
+    recoveryDays: 64,
+    assignedClinician: 'Dr. Sarah Jenkins',
+    avatarColor: '#312e81',
+    overallRisk: 'stable',
+    sessions: [
+      {
+        id: 'ih-6',
+        day: 6,
+        dateStr: '6 Sep 2024',
+        time: '10:00',
+        topic: 'Day 50 Sobriety Milestone Reflection',
+        durationMinutes: 15,
+        messageCount: 8,
+        riskLevel: 'stable',
+        riskScore: 16,
+        triggerCues: ['milestone gratitude'],
+        eventRef: createSessionEvent(
+          'ih-ev-6', 6, '10:00', 'Iman Hakimi', 'PT-10024', 31,
+          'Alcohol Use Disorder (Early Remission)', 64, 'Dr. Sarah Jenkins', 16, 'stable',
+          'Stable Recovery', [],
+          'Day 50 Sobriety Milestone Reflection',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Congratulations on surpassing Day 50, Iman! How does your clarity and momentum feel today?', time: '10:00' },
+            { id: 2, sender: 'patient', senderName: 'Iman Hakimi', text: 'My thinking is so sharp compared to two months ago. My family is really proud of me.', time: '10:02' }
+          ]
+        )
+      },
+      {
+        id: 'ih-16',
+        day: 16,
+        dateStr: '16 Sep 2024',
+        time: '11:30',
+        topic: 'Stress Inoculation & Routine Work Log',
+        durationMinutes: 12,
+        messageCount: 6,
+        riskLevel: 'stable',
+        riskScore: 20,
+        triggerCues: ['work travel preparation'],
+        eventRef: createSessionEvent(
+          'ih-ev-16', 16, '11:30', 'Iman Hakimi', 'PT-10024', 31,
+          'Alcohol Use Disorder (Early Remission)', 64, 'Dr. Sarah Jenkins', 20, 'stable',
+          'Stable Routine', ['Travel logistics'],
+          'Stress Inoculation & Routine Work Log',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Checking in on your upcoming business travel preparation, Iman.', time: '11:30' },
+            { id: 2, sender: 'patient', senderName: 'Iman Hakimi', text: 'Requested a mini-fridge without alcohol from the hotel and mapped out local meetings.', time: '11:32' }
+          ]
+        )
+      },
+      {
+        id: 'ih-26',
+        day: 26,
+        dateStr: '26 Sep 2024',
+        time: '09:45',
+        topic: 'Relapse Prevention & Wellness Plan Review',
+        durationMinutes: 18,
+        messageCount: 10,
+        riskLevel: 'stable',
+        riskScore: 18,
+        triggerCues: ['long-term maintenance plan'],
+        eventRef: createSessionEvent(
+          'ih-ev-26', 26, '09:45', 'Iman Hakimi', 'PT-10024', 31,
+          'Alcohol Use Disorder (Early Remission)', 64, 'Dr. Sarah Jenkins', 18, 'stable',
+          'Stable Maintenance', [],
+          'Relapse Prevention & Wellness Plan Review',
+          [
+            { id: 1, sender: 'care', senderName: 'Coherent AI Care Specialist', text: 'Morning Iman. Reviewing your Day 60+ wellness maintenance targets.', time: '09:45' },
+            { id: 2, sender: 'patient', senderName: 'Iman Hakimi', text: 'All goals on track. Running 3 times a week and attending weekly recovery groups.', time: '09:47' }
+          ]
+        )
+      }
+    ]
+  }
+];
+
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<'timeline' | 'watchlist' | 'patient-status'>('timeline');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<'timeline' | 'watchlist' | 'patient-status'>(
+    (location.state as any)?.activeTab || 'timeline'
+  );
   const [activeEvent, setActiveEvent] = useState<PatientSessionEvent | null>(null);
   const [modalTab, setModalTab] = useState<'symptoms' | 'conversation' | 'actions'>('symptoms');
   const [clinicianNote, setClinicianNote] = useState('');
   const [noteSavedMessage, setNoteSavedMessage] = useState('');
   const [actionNotice, setActionNotice] = useState('');
 
-  // Timeline View Switcher (Limits number of views/tables displayed simultaneously)
-  const [timelineViewIndex, setTimelineViewIndex] = useState<number>(0); // 0 = Calendar, 1 = Upcoming Table
-
-  // Table Row Pagination (Limits row count displayed per table)
-  const [upcomingPage, setUpcomingPage] = useState<number>(1);
-  const upcomingItemsPerPage = 3;
+  // Patient Chat Gantt Chart Filters
+  const [ganttSearch, setGanttSearch] = useState('');
+  const [ganttRiskFilter, setGanttRiskFilter] = useState<'all' | 'high' | 'moderate' | 'stable'>('all');
+  
+  // Gantt Chart Date State
+  const [currentMonth, setCurrentMonth] = useState(8); // 0-indexed, default Sep
+  const [currentYear, setCurrentYear] = useState(2024);
 
   const [watchlistPage, setWatchlistPage] = useState<number>(1);
   const watchlistItemsPerPage = 4;
@@ -452,11 +961,7 @@ const Admin = () => {
   };
 
   const handleOpenEvent = (event: PatientSessionEvent) => {
-    setActiveEvent(event);
-    setModalTab('symptoms');
-    setClinicianNote('');
-    setNoteSavedMessage('');
-    setActionNotice('');
+    navigate('/patient-detail', { state: { event } });
   };
 
   const handleCloseModal = () => {
@@ -543,19 +1048,65 @@ const Admin = () => {
     showToast(`New trigger "${newItem.name}" created and active!`);
   };
 
-  // Calendar setup for September 2024
-  const leadingBlanks = [null, null, null, null, null];
-  const trailingBlanks = [null, null, null, null, null];
-  const calendarDays = Array.from({ length: 25 }, (_, i) => i + 6); // 6 to 30
+  // Gantt Timeline setup based on currentMonth and currentYear
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const ganttDays = Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1;
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const d = new Date(currentYear, currentMonth, day);
+    const weekday = weekdays[d.getDay()];
+    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+    return { day, weekday, isWeekend };
+  });
 
-  const filteredUpcomingEvents = Object.values(patientEventsData);
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(prev => prev - 1);
+    } else {
+      setCurrentMonth(prev => prev - 1);
+    }
+  };
 
-  const totalUpcomingPages = Math.max(1, Math.ceil(filteredUpcomingEvents.length / upcomingItemsPerPage));
-  const currentUpcomingPage = Math.min(upcomingPage, totalUpcomingPages);
-  const paginatedUpcomingEvents = filteredUpcomingEvents.slice(
-    (currentUpcomingPage - 1) * upcomingItemsPerPage,
-    currentUpcomingPage * upcomingItemsPerPage
-  );
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(prev => prev + 1);
+    } else {
+      setCurrentMonth(prev => prev + 1);
+    }
+  };
+
+  const filteredGanttTracks = patientGanttTracks
+    .map((track) => {
+      const q = ganttSearch.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        track.patientName.toLowerCase().includes(q) ||
+        track.patientId.toLowerCase().includes(q) ||
+        track.primaryCondition.toLowerCase().includes(q) ||
+        track.assignedClinician.toLowerCase().includes(q) ||
+        track.sessions.some(s => s.topic.toLowerCase().includes(q));
+
+      const filteredSessions = track.sessions.filter((s) => {
+        if (ganttRiskFilter === 'all') return true;
+        return s.riskLevel === ganttRiskFilter;
+      });
+
+      return {
+        ...track,
+        matchesSearch,
+        sessions: filteredSessions
+      };
+    })
+    .filter((track) => track.matchesSearch && (ganttRiskFilter === 'all' || track.sessions.length > 0));
+
+  const totalChatSessionsCount = patientGanttTracks.reduce((acc, t) => acc + t.sessions.length, 0);
+  const highRiskCount = patientGanttTracks.reduce((acc, t) => acc + t.sessions.filter(s => s.riskLevel === 'high').length, 0);
+  const moderateRiskCount = patientGanttTracks.reduce((acc, t) => acc + t.sessions.filter(s => s.riskLevel === 'moderate').length, 0);
+  const stableRiskCount = patientGanttTracks.reduce((acc, t) => acc + t.sessions.filter(s => s.riskLevel === 'stable').length, 0);
 
   const filteredWatchlist = watchlist.filter(item => {
     const matchesCategory = selectedCategoryFilter === 'All' || item.category === selectedCategoryFilter;
@@ -588,34 +1139,8 @@ const Admin = () => {
     return matchesStatus && matchesSearch;
   });
 
-  // Sidebar matching Booking page sidebar layout & CSS
   const sidebarContent = (
-    <div className="bookings-sidebar">
-      <div className="claude-sidebar-section-title" style={{ fontSize: '0.74rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0.2rem 0.65rem 0.4rem' }}>
-        Clinical Administration
-      </div>
-      <button
-        className={`sidebar-nav-btn ${activeTab === 'timeline' ? 'active' : ''}`}
-        onClick={() => setActiveTab('timeline')}
-      >
-        <span className="sidebar-nav-bullet" />
-        Patient Timeline
-      </button>
-      <button
-        className={`sidebar-nav-btn ${activeTab === 'watchlist' ? 'active' : ''}`}
-        onClick={() => setActiveTab('watchlist')}
-      >
-        <span className="sidebar-nav-bullet" />
-        AI Watchlist
-      </button>
-      <button
-        className={`sidebar-nav-btn ${activeTab === 'patient-status' ? 'active' : ''}`}
-        onClick={() => setActiveTab('patient-status')}
-      >
-        <span className="sidebar-nav-bullet" />
-        Patient Status
-      </button>
-    </div>
+    <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
   );
 
   return (
@@ -632,282 +1157,307 @@ const Admin = () => {
             TAB 1: PATIENT TIMELINE (WITH CALENDAR & DETAIL REVEAL)
            ========================================================================= */}
         {activeTab === 'timeline' && (
-          <>
+          <div className="gantt-tab-wrapper">
             <div className="admin-header-row">
               <div>
                 <h1 className="display-header admin-page-title">PATIENT TIMELINE</h1>
                 <p className="admin-subtitle">
-                  Supervised sessions, flagged relapse symptoms, and conversation transcripts
+                  Continuous AI care dialogue logs, relapse vulnerability flags, and real-time clinical intervention timeline.
                 </p>
-              </div>
-              {/* UNCLUTTERED SEGMENTED VIEW SWITCHER */}
-              <div className="timeline-view-switch-wrapper">
-                <div className="timeline-segmented-pills" role="tablist" aria-label="Timeline Views">
-                  <button
-                    type="button"
-                    className={`timeline-seg-btn ${timelineViewIndex === 0 ? 'active' : ''}`}
-                    onClick={() => setTimelineViewIndex(0)}
-                    aria-selected={timelineViewIndex === 0}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    <span>Calendar</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`timeline-seg-btn ${timelineViewIndex === 1 ? 'active' : ''}`}
-                    onClick={() => setTimelineViewIndex(1)}
-                    aria-selected={timelineViewIndex === 1}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="8" y1="6" x2="21" y2="6"></line>
-                      <line x1="8" y1="12" x2="21" y2="12"></line>
-                      <line x1="8" y1="18" x2="21" y2="18"></line>
-                      <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                      <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                      <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                    </svg>
-                    <span>Sessions Table</span>
-                    <span className="seg-badge">{filteredUpcomingEvents.length}</span>
-                  </button>
-                </div>
-
-                <div className="timeline-stepper-arrows" aria-label="Step view">
-                  <button
-                    type="button"
-                    className="stepper-arrow-btn"
-                    disabled={timelineViewIndex === 0}
-                    onClick={() => setTimelineViewIndex((prev) => Math.max(0, prev - 1))}
-                    title="Previous View (Calendar)"
-                    aria-label="Previous view"
-                  >
-                    &larr;
-                  </button>
-                  <span className="stepper-counter">{timelineViewIndex + 1} / 2</span>
-                  <button
-                    type="button"
-                    className="stepper-arrow-btn"
-                    disabled={timelineViewIndex === 1}
-                    onClick={() => setTimelineViewIndex((prev) => Math.min(1, prev + 1))}
-                    title="Next View (Sessions Table)"
-                    aria-label="Next view"
-                  >
-                    &rarr;
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* VIEW 1: CALENDAR (MATCHING REFERENCE IMAGE) */}
-            {timelineViewIndex === 0 && (
-              <div className="calendar-card">
-                <div className="calendar-header">
-                  <h2 className="month-title">September 2024</h2>
-                  <div className="cal-nav-buttons">
-                    <button className="cal-arrow-btn" aria-label="Previous month">&lt;</button>
-                    <button className="cal-arrow-btn" aria-label="Next month">&gt;</button>
-                  </div>
+            {/* Quick Metrics Bar */}
+            <div className="gantt-metrics-strip">
+              <div className="gantt-metric-card">
+                <span className="metric-val">{filteredGanttTracks.length}</span>
+                <span className="metric-lbl">Monitored Patients</span>
+              </div>
+              <div className="gantt-metric-card">
+                <span className="metric-val">{totalChatSessionsCount}</span>
+                <span className="metric-lbl">AI Care Chats</span>
+              </div>
+              <div className="gantt-metric-card high-risk">
+                <div className="metric-val-row">
+                  <span className="gantt-legend-dot high" />
+                  <span className="metric-val">{highRiskCount}</span>
                 </div>
-
-                <div className="weekdays-row">
-                  <div className="weekday-col">Mo</div>
-                  <div className="weekday-col">Tu</div>
-                  <div className="weekday-col">We</div>
-                  <div className="weekday-col">Th</div>
-                  <div className="weekday-col">Fr</div>
-                  <div className="weekday-col">Sa</div>
-                  <div className="weekday-col">Su</div>
+                <span className="metric-lbl">High Alerts (Relapse)</span>
+              </div>
+              <div className="gantt-metric-card moderate-risk">
+                <div className="metric-val-row">
+                  <span className="gantt-legend-dot moderate" />
+                  <span className="metric-val">{moderateRiskCount}</span>
                 </div>
+                <span className="metric-lbl">Moderate Checkpoints</span>
+              </div>
+              <div className="gantt-metric-card stable-risk">
+                <div className="metric-val-row">
+                  <span className="gantt-legend-dot stable" />
+                  <span className="metric-val">{stableRiskCount}</span>
+                </div>
+                <span className="metric-lbl">Stable Milestones</span>
+              </div>
+            </div>
 
-                <div className="calendar-grid">
-                  {/* 5 Leading Blank Tiles */}
-                  {leadingBlanks.map((_, idx) => (
-                    <div key={`lead-${idx}`} className="calendar-cell empty-cell" />
-                  ))}
+            {/* Gantt Filter & Search Controls */}
+            <div className="gantt-controls-bar">
+              <div className="gantt-search-wrapper">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  className="gantt-search-input"
+                  placeholder="Filter by patient name, ID, diagnosis, doctor, or chat topic..."
+                  value={ganttSearch}
+                  onChange={(e) => setGanttSearch(e.target.value)}
+                />
+                {ganttSearch && (
+                  <button
+                    type="button"
+                    className="gantt-search-clear"
+                    onClick={() => setGanttSearch('')}
+                    aria-label="Clear search"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
 
-                  {/* Days 6 to 30 */}
-                  {calendarDays.map((day) => {
-                    const event = patientEventsData[day];
-                    const hasEvent = Boolean(event);
+              <div className="gantt-filter-pills" role="tablist" aria-label="Risk Level Filter">
+                <button
+                  type="button"
+                  className={`gantt-filter-btn ${ganttRiskFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setGanttRiskFilter('all')}
+                >
+                  All ({totalChatSessionsCount})
+                </button>
+                <button
+                  type="button"
+                  className={`gantt-filter-btn risk-high ${ganttRiskFilter === 'high' ? 'active' : ''}`}
+                  onClick={() => setGanttRiskFilter('high')}
+                >
+                  <span className="gantt-legend-dot high" />
+                  High Alert ({highRiskCount})
+                </button>
+                <button
+                  type="button"
+                  className={`gantt-filter-btn risk-moderate ${ganttRiskFilter === 'moderate' ? 'active' : ''}`}
+                  onClick={() => setGanttRiskFilter('moderate')}
+                >
+                  <span className="gantt-legend-dot moderate" />
+                  Moderate ({moderateRiskCount})
+                </button>
+                <button
+                  type="button"
+                  className={`gantt-filter-btn risk-stable ${ganttRiskFilter === 'stable' ? 'active' : ''}`}
+                  onClick={() => setGanttRiskFilter('stable')}
+                >
+                  <span className="gantt-legend-dot stable" />
+                  Stable ({stableRiskCount})
+                </button>
+              </div>
+            </div>
 
-                    return (
-                      <div
-                        key={day}
-                        className={`calendar-cell has-date ${hasEvent ? 'has-event' : ''}`}
-                        role={hasEvent ? 'button' : undefined}
-                        tabIndex={hasEvent ? 0 : undefined}
-                        onClick={() => {
-                          if (hasEvent) {
-                            handleOpenEvent(event);
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (hasEvent && (e.key === 'Enter' || e.key === ' ')) {
-                            e.preventDefault();
-                            handleOpenEvent(event);
-                          }
-                        }}
-                        title={hasEvent ? `Click to inspect ${event.patientName} conversation & relapse symptoms` : `Day ${day}`}
-                      >
-                        <span className="cell-day-number">{day}</span>
-                        {hasEvent && (
-                          <>
-                            <span className="cell-event-time">{event.time}</span>
-                            <span className="cell-event-patient">{event.patientName}</span>
-                            {event.relapseSymptoms.riskLevel === 'high' && (
-                              <span className="cell-risk-indicator" title="High Relapse Warning" />
-                            )}
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {/* 5 Trailing Blank Tiles */}
-                  {trailingBlanks.map((_, idx) => (
-                    <div key={`trail-${idx}`} className="calendar-cell empty-cell" />
-                  ))}
+            {/* Horizontal Scrollable Gantt Canvas Card */}
+            <div className="gantt-chart-card">
+              <div className="gantt-card-header">
+                <div className="gantt-card-title-group">
+                  <span className="gantt-month-badge" style={{ display: 'flex', alignItems: 'center' }}>
+                    <button onClick={handlePrevMonth} className="gantt-filter-btn" style={{ padding: '0.2rem 0.5rem', marginRight: '0.5rem' }} aria-label="Previous Month">&lt;</button>
+                    <select 
+                      className="gantt-month-select" 
+                      value={currentMonth} 
+                      onChange={(e) => setCurrentMonth(Number(e.target.value))}
+                      style={{ padding: '0.25rem', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#fff', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a' }}
+                    >
+                      {monthNames.map((m, idx) => (
+                        <option key={idx} value={idx}>{m}</option>
+                      ))}
+                    </select>
+                    <select 
+                      className="gantt-year-select" 
+                      value={currentYear} 
+                      onChange={(e) => setCurrentYear(Number(e.target.value))}
+                      style={{ marginLeft: '0.35rem', marginRight: '0.5rem', padding: '0.25rem', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#fff', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a' }}
+                    >
+                      {[2023, 2024, 2025, 2026].map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                    <button onClick={handleNextMonth} className="gantt-filter-btn" style={{ padding: '0.2rem 0.5rem' }} aria-label="Next Month">&gt;</button>
+                  </span>
+                  <span className="gantt-helper-hint">
+                    Displaying {daysInMonth} Days of AI Interventions
+                  </span>
+                </div>
+                <div className="gantt-legend-inline">
+                  <div className="legend-item"><span className="gantt-legend-dot high" /> High Alert</div>
+                  <div className="legend-item"><span className="gantt-legend-dot moderate" /> Moderate Check</div>
+                  <div className="legend-item"><span className="gantt-legend-dot stable" /> Stable Routine</div>
                 </div>
               </div>
-            )}
 
-            {/* VIEW 2: UPCOMING SESSIONS TABLE (WITH SLIDER AT TOP & PAGINATION) */}
-            {timelineViewIndex === 1 && (
-              <div className="upcoming-card">
-                <div className="table-header-action-bar" style={{ marginBottom: '0.85rem' }}>
-                  <div>
-                    <h3 className="upcoming-title" style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>
-                      Upcoming Sessions & Clinical Triage
-                    </h3>
-                    <p className="admin-subtitle" style={{ fontSize: '0.82rem', marginTop: '0.2rem', color: '#64748b' }}>
-                      Select any session row to inspect dialogue transcripts and clinical relapse symptoms
-                    </p>
-                  </div>
-                </div>
-
-                <div className="admin-table-top-slider-wrapper">
-                  <table className="watchlist-table upcoming-table">
-                    <thead>
-                      <tr>
-                        <th style={{ minWidth: '170px' }}>Date & Time</th>
-                        <th style={{ minWidth: '160px' }}>Patient</th>
-                        <th style={{ minWidth: '220px' }}>Diagnosis / Condition</th>
-                        <th style={{ minWidth: '145px' }}>Relapse Status</th>
-                        <th style={{ minWidth: '160px' }}>Assigned Clinician</th>
-                        <th style={{ minWidth: '85px', textAlign: 'center' }}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedUpcomingEvents.length === 0 ? (
-                        <tr>
-                          <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
-                            No sessions found for this patient filter.
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedUpcomingEvents.map((ev) => (
-                          <tr
-                            key={ev.id}
-                            onClick={() => handleOpenEvent(ev)}
-                            style={{ cursor: 'pointer' }}
-                            title="Click to inspect patient conversation and relapse symptoms"
+              <div className="gantt-scroll-viewport">
+                <div className="gantt-canvas">
+                  {/* Timeline Header Row (Dynamic Days) */}
+                  <div className="gantt-header-axis">
+                    <div className="gantt-patient-header-col">
+                      <span>PATIENT / CARE PROFILE ({filteredGanttTracks.length})</span>
+                    </div>
+                    <div className="gantt-days-axis">
+                      {ganttDays.map(({ day, weekday, isWeekend }) => {
+                        const isToday = currentYear === 2024 && currentMonth === 8 && day === 19;
+                        return (
+                          <div
+                            key={day}
+                            className={`gantt-day-header-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`}
                           >
-                            <td>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <div className="upcoming-badge-square" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                                  {ev.day}
-                                </div>
-                                <div>
-                                  <strong style={{ fontSize: '0.88rem', color: '#1a1a1a', display: 'block' }}>
-                                    {ev.day} Sep 2024
-                                  </strong>
-                                  <span style={{ fontSize: '0.78rem', color: '#666' }}>{ev.time}</span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <strong style={{ fontSize: '0.9rem', color: '#111827', display: 'block' }}>
-                                {ev.patientName}
-                              </strong>
-                              <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
-                                {ev.patientId} &middot; Age {ev.age}
-                              </span>
-                            </td>
-                            <td>
-                              <span style={{ fontSize: '0.86rem', color: '#334155' }}>
-                                {ev.primaryCondition}
-                              </span>
-                            </td>
-                            <td>
-                              <span className={`risk-pill ${ev.relapseSymptoms.riskLevel}`}>
-                                <span className="risk-dot" />
-                                {ev.relapseSymptoms.riskLevel === 'high' && 'Relapse Alert'}
-                                {ev.relapseSymptoms.riskLevel === 'moderate' && 'Relapse Check'}
-                                {ev.relapseSymptoms.riskLevel === 'stable' && 'Stable Routine'}
-                              </span>
-                            </td>
-                            <td>
-                              <span style={{ fontSize: '0.84rem', color: '#475569' }}>
-                                {ev.assignedClinician}
-                              </span>
-                            </td>
-                            <td style={{ textAlign: 'center' }}>
-                              <button
-                                className="icon-action-btn eye-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOpenEvent(ev);
-                                }}
-                                title="Inspect patient dialogue & relapse symptoms"
-                                aria-label="Inspect patient dialogue and relapse symptoms"
-                              >
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                            <span className="gantt-day-num">{day < 10 ? `0${day}` : day}</span>
+                            <span className="gantt-day-name">{weekday}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                {/* Table Pagination Footer (Limits row display count) */}
-                <div className="table-pagination-footer">
-                  <div className="pagination-info">
-                    Showing {(currentUpcomingPage - 1) * upcomingItemsPerPage + 1} -{' '}
-                    {Math.min(currentUpcomingPage * upcomingItemsPerPage, filteredUpcomingEvents.length)} of{' '}
-                    {filteredUpcomingEvents.length} sessions
-                  </div>
-                  <div className="pagination-controls">
-                    <button
-                      className="pagination-btn"
-                      disabled={currentUpcomingPage <= 1}
-                      onClick={() => setUpcomingPage((p) => Math.max(1, p - 1))}
-                    >
-                      &larr; Previous
-                    </button>
-                    <span className="pagination-page-badge">
-                      Page {currentUpcomingPage} of {totalUpcomingPages}
-                    </span>
-                    <button
-                      className="pagination-btn"
-                      disabled={currentUpcomingPage >= totalUpcomingPages}
-                      onClick={() => setUpcomingPage((p) => Math.min(totalUpcomingPages, p + 1))}
-                    >
-                      Next &rarr;
-                    </button>
-                  </div>
+                  {/* Patient Swimlane Rows */}
+                  {filteredGanttTracks.length === 0 ? (
+                    <div className="gantt-empty-state">
+                      <p>No patient chat sessions match your filter criteria.</p>
+                      <button
+                        type="button"
+                        className="gantt-reset-btn"
+                        onClick={() => {
+                          setGanttSearch('');
+                          setGanttRiskFilter('all');
+                        }}
+                      >
+                        Reset Search & Filters
+                      </button>
+                    </div>
+                  ) : (
+                    filteredGanttTracks.map((track) => (
+                      <div key={track.patientId} className="gantt-swimlane-row">
+                        {/* Pinned Patient Info Cell */}
+                        <div className="gantt-patient-cell">
+                          <div
+                            className="gantt-patient-avatar"
+                            style={{ backgroundColor: track.avatarColor }}
+                          >
+                            {track.patientName.split(' ').map((n) => n[0]).join('')}
+                            <span className={`gantt-avatar-risk-dot ${track.overallRisk}`} />
+                          </div>
+                          <div className="gantt-patient-meta">
+                            <div className="gantt-patient-name-row">
+                              <span className="gantt-patient-name">{track.patientName}</span>
+                              <span className="gantt-patient-id">{track.patientId}</span>
+                            </div>
+                            <div className="gantt-patient-sub">
+                              <span className="gantt-patient-condition">{track.primaryCondition}</span>
+                            </div>
+                            <div className="gantt-patient-footer-line">
+                              <span className="gantt-recovery-tag">Day {track.recoveryDays}</span>
+                              <span className="gantt-clinician-tag">{track.assignedClinician}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Track Area with Day Grid Lines & Chat Blocks */}
+                        <div className="gantt-track-cell">
+                          {/* Background Grid Columns */}
+                          <div className="gantt-grid-columns-bg">
+                            {ganttDays.map(({ day, isWeekend }) => {
+                              const isToday = currentYear === 2024 && currentMonth === 8 && day === 19;
+                              return (
+                                <div
+                                  key={day}
+                                  className={`gantt-grid-column ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`}
+                                />
+                              );
+                            })}
+                          </div>
+
+                          {/* Chat Session Blocks */}
+                          <div className="gantt-blocks-layer">
+                            {track.sessions.map((session) => {
+                              // Ensure the session falls within the current month/year being viewed
+                              if (currentYear !== 2024 || currentMonth !== 8) return null; // We only have mock data for Sep 2024
+
+                              const leftPercent = ((session.day - 1) / daysInMonth) * 100;
+                              const widthPercent = (1 / daysInMonth) * 100;
+                              
+                              let alignClass = '';
+                              if (leftPercent > 75) alignClass = 'near-right';
+                              else if (leftPercent < 25) alignClass = 'near-left';
+
+                              return (
+                                <div
+                                  key={session.id}
+                                  className={`gantt-chat-block ${session.riskLevel} ${alignClass}`}
+                                  style={{
+                                    left: `calc(${leftPercent}% + 2px)`,
+                                    width: `calc(${widthPercent}% - 4px)`
+                                  }}
+                                  onClick={() => handleOpenEvent(session.eventRef)}
+                                  role="button"
+                                  tabIndex={0}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      handleOpenEvent(session.eventRef);
+                                    }
+                                  }}
+                                  aria-label={`Open transcript for ${track.patientName}, Day ${session.day} at ${session.time}`}
+                                >
+                                  <div className="gantt-block-inner">
+                                    <svg className="gantt-chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                  </div>
+
+                                  {/* Tooltip on Hover */}
+                                  <div className="gantt-block-tooltip">
+                                    <div className="tooltip-header">
+                                      <span className="tooltip-day">Day {session.day} &middot; {session.time}</span>
+                                      <span className={`tooltip-risk-badge ${session.riskLevel}`}>
+                                        {session.riskLevel.toUpperCase()}
+                                      </span>
+                                    </div>
+                                    <div className="tooltip-topic">{session.topic}</div>
+                                    <div className="tooltip-metrics">
+                                      <span>&bull; {session.durationMinutes} min session</span>
+                                      <span>&bull; {session.messageCount} messages</span>
+                                      <span>&bull; Risk: {session.riskScore}/100</span>
+                                    </div>
+                                    {session.triggerCues && session.triggerCues.length > 0 && (
+                                      <div className="tooltip-triggers">
+                                        <span className="trigger-label">Triggers:</span>
+                                        <div className="trigger-tags-wrap">
+                                          {session.triggerCues.slice(0, 3).map((trig, idx) => (
+                                            <span key={idx} className="tooltip-trigger-tag">{trig}</span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    <div className="tooltip-action-prompt">
+                                      Click to view AI dialogue & relapse triage &rarr;
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-            )}
-          </>
+            </div>
+          </div>
         )}
 
         {/* =========================================================================

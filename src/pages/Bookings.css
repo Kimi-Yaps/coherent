@@ -98,19 +98,19 @@
    -------------------------------------------------------------------------- */
 .booking-card {
   background-color: #ffffff;
-  border: 1px solid #edf0ed;
-  border-radius: 16px;
-  padding: 1.8rem 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.6rem 1.8rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .section-title {
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: 0.74rem;
+  color: #6b7280;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin: 0 0 1.2rem 0;
+  margin: 0 0 1rem 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -126,39 +126,42 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.9rem 1.1rem;
-  background-color: #fafafa;
-  border: 1.5px solid #edf0ed;
-  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
   width: 100%;
   box-sizing: border-box;
 }
 
 .listener-card-select:hover {
-  background-color: #f5f8f5;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
 }
 
 .listener-card-select.selected {
-  background-color: #f0f7ef;
-  border-color: #2e5a27;
-  box-shadow: 0 4px 12px rgba(46, 90, 39, 0.08);
+  background-color: #fafafa;
+  border-color: #111827;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  outline: none;
 }
 
 .listener-avatar-badge {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .listener-card-info {
@@ -170,9 +173,9 @@
 }
 
 .listener-card-name {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -180,12 +183,20 @@
 
 .listener-card-role {
   font-size: 0.74rem;
-  color: #64748b;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .selection-check {
-  font-size: 0.95rem;
-  color: #2e5a27;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #111827;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
   font-weight: 800;
   margin-left: auto;
 }
@@ -211,46 +222,46 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 62px;
+  min-width: 64px;
   height: 68px;
   padding: 0.5rem 0.85rem;
-  background-color: #fafafa;
-  border: 1.5px solid #edf0ed;
-  border-radius: 12px;
+  background-color: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   flex-shrink: 0;
 }
 
 .day-chip-btn:hover {
-  background-color: #f3f6f3;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .day-chip-btn.selected {
-  background-color: #1a1a1a;
-  border-color: #1a1a1a;
+  background-color: #111827;
+  border-color: #111827;
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.2);
   transform: translateY(-2px);
 }
 
 .day-chip-name {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: #64748b;
+  color: #6b7280;
   text-transform: uppercase;
 }
 
 .day-chip-btn.selected .day-chip-name {
-  color: #94a3b8;
+  color: #9ca3af;
 }
 
 .day-chip-num {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
-  margin-top: 0.15rem;
+  color: #111827;
+  margin-top: 0.1rem;
 }
 
 .day-chip-btn.selected .day-chip-num {
@@ -264,28 +275,29 @@
 }
 
 .time-slot-chip {
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1.5px solid #edf0ed;
-  background-color: #fafafa;
-  color: #1e293b;
-  font-size: 0.92rem;
+  padding: 0.65rem 0.95rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-align: center;
 }
 
 .time-slot-chip:hover {
-  background-color: #f3f6f3;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 .time-slot-chip.selected {
-  background-color: #2e5a27;
+  background-color: #111827;
   color: #ffffff;
-  border-color: #2e5a27;
-  box-shadow: 0 4px 12px rgba(46, 90, 39, 0.18);
+  border-color: #111827;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.16);
   transform: translateY(-1px);
 }
 
@@ -294,10 +306,10 @@
    -------------------------------------------------------------------------- */
 .booking-confirmation {
   background-color: #ffffff;
-  border: 1px solid #edf0ed;
-  border-radius: 16px;
-  padding: 1.4rem 1.8rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1.6rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -312,14 +324,15 @@
 }
 
 .confirmation-badge-icon {
-  width: 44px;
-  height: 44px;
-  background-color: #f1f5f9;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
@@ -330,14 +343,14 @@
 }
 
 .confirmation-listener {
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #111827;
 }
 
 .confirmation-datetime {
-  font-size: 0.86rem;
-  color: #64748b;
+  font-size: 0.84rem;
+  color: #6b7280;
   font-weight: 500;
 }
 
@@ -348,38 +361,40 @@
 }
 
 .btn-outline {
-  padding: 0.75rem 1.3rem;
-  border: 1.5px solid #cbd5e1;
+  padding: 0.65rem 1.25rem;
+  border: 1.5px solid #e5e7eb;
   background-color: #ffffff;
-  color: #334155;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  color: #374151;
+  border-radius: 8px;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-outline:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 .btn-green {
-  padding: 0.75rem 1.5rem;
-  background-color: #2e5a27;
+  padding: 0.65rem 1.4rem;
+  background-color: #111827;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  font-size: 0.92rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(46, 90, 39, 0.2);
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-green:hover {
-  background-color: #24491f;
+  background-color: #000000;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* --------------------------------------------------------------------------
@@ -394,25 +409,25 @@
 .calendar-session-card {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  padding: 1.1rem 1.3rem;
-  background-color: #fafafa;
-  border: 1px solid #edf0ed;
-  border-radius: 14px;
-  transition: all 0.2s ease;
+  gap: 1.1rem;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.15s ease;
 }
 
 .calendar-session-card:hover {
-  background-color: #f8faf8;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .calendar-session-date-box {
-  width: 52px;
-  height: 52px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -421,18 +436,18 @@
 }
 
 .cal-day {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #111827;
   line-height: 1;
 }
 
 .cal-month {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: #64748b;
+  color: #6b7280;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .calendar-session-info {
@@ -451,9 +466,9 @@
 }
 
 .calendar-counselor-name {
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #111827;
 }
 
 .calendar-status-badge {
@@ -462,39 +477,43 @@
   padding: 2px 7px;
   border-radius: 6px;
   text-transform: uppercase;
+  border: 1px solid transparent;
 }
 
 .calendar-status-badge.confirmed {
   background-color: #ecfdf5;
   color: #065f46;
+  border-color: #a7f3d0;
 }
 
 .calendar-status-badge.scheduled {
-  background-color: #f0f9ff;
-  color: #0369a1;
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
 }
 
 .calendar-time-line {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #6b7280;
 }
 
 .calendar-reschedule-btn {
   padding: 0.45rem 0.95rem;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  color: #334155;
+  border: 1px solid #e5e7eb;
+  color: #374151;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .calendar-reschedule-btn:hover {
-  background-color: #f1f5f9;
-  border-color: #94a3b8;
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 /* --------------------------------------------------------------------------
@@ -510,25 +529,27 @@
   display: flex;
   align-items: center;
   gap: 1.1rem;
-  padding: 1rem 1.25rem;
-  background-color: #fafafa;
-  border: 1.5px solid #edf0ed;
+  padding: 0.95rem 1.25rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   width: 100%;
   text-align: left;
   box-sizing: border-box;
 }
 
 .session-bar-btn:hover {
-  background-color: #f3f6f3;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .session-bar-btn.selected {
-  background-color: #f0f7ef;
-  border-color: #2e5a27;
+  background-color: #fafafa;
+  border-color: #111827;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  outline: none;
 }
 
 .session-bar-left {
@@ -539,14 +560,14 @@
 }
 
 .session-bar-date {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #111827;
 }
 
 .session-bar-time {
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: 0.76rem;
+  color: #6b7280;
 }
 
 .session-bar-details {
@@ -557,30 +578,36 @@
 }
 
 .session-bar-name {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #111827;
 }
 
 .session-bar-status {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #2e5a27;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  align-self: flex-start;
 }
 
 .session-bar-radio {
   width: 18px;
   height: 18px;
-  border: 2px solid #cbd5e1;
+  border: 2px solid #d1d5db;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .session-bar-btn.selected .session-bar-radio {
-  border-color: #2e5a27;
-  background-color: #2e5a27;
+  border-color: #111827;
+  background-color: #111827;
   box-shadow: inset 0 0 0 3px #ffffff;
 }
 
@@ -592,54 +619,57 @@
 }
 
 .time-pill-btn {
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1.5px solid #edf0ed;
-  background-color: #fafafa;
-  color: #1e293b;
+  padding: 0.65rem 0.95rem;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #374151;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-align: center;
 }
 
 .time-pill-btn:hover {
-  background-color: #f3f6f3;
-  border-color: #d1e3cf;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 .time-pill-btn.selected {
-  background-color: #1a1a1a;
+  background-color: #111827;
   color: #ffffff;
-  border-color: #1a1a1a;
+  border-color: #111827;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .btn-full-green {
   width: 100%;
-  margin-top: 1.5rem;
-  padding: 0.9rem 1.5rem;
-  background-color: #2e5a27;
+  margin-top: 1.4rem;
+  padding: 0.85rem 1.5rem;
+  background-color: #111827;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(46, 90, 39, 0.2);
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-full-green:hover {
-  background-color: #24491f;
+  background-color: #000000;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .notification-banner {
-  padding: 0.9rem 1.4rem;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 500;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -647,7 +677,7 @@
 }
 
 .notification-banner.success {
-  background-color: #dcfce7;
+  background-color: #f0fdf4;
   color: #166534;
   border: 1px solid #bbf7d0;
 }

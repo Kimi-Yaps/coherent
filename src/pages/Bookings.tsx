@@ -127,7 +127,12 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
         {activeTab === 'reschedule' && (
           <>
             <div className="bookings-page-header-row">
-              <h1 className="display-header page-header">RESCHEDULE</h1>
+              <div>
+                <h1 className="display-header page-header">RESCHEDULE</h1>
+                <p className="admin-subtitle" style={{ fontSize: '0.84rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+                  Move your scheduled care appointments to a new available date and time
+                </p>
+              </div>
               <span className="bookings-header-badge">Manage Sessions</span>
             </div>
             
@@ -199,7 +204,12 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
         {activeTab === 'booking' && (
           <>
             <div className="bookings-page-header-row">
-              <h1 className="display-header page-header">BOOK A SESSION</h1>
+              <div>
+                <h1 className="display-header page-header">BOOK A SESSION</h1>
+                <p className="admin-subtitle" style={{ fontSize: '0.84rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+                  Confidential 1-on-1 sessions with licensed recovery specialists and psychologists
+                </p>
+              </div>
               <span className="bookings-header-badge">Confidential & 1-on-1</span>
             </div>
 
@@ -305,7 +315,12 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
         {activeTab === 'calendar' && (
           <>
             <div className="bookings-page-header-row">
-              <h1 className="display-header page-header">CALENDAR</h1>
+              <div>
+                <h1 className="display-header page-header">CALENDAR</h1>
+                <p className="admin-subtitle" style={{ fontSize: '0.84rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+                  View upcoming confirmed and scheduled appointments with your care team
+                </p>
+              </div>
               <span className="bookings-header-badge">Your Appointments</span>
             </div>
             

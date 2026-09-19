@@ -1,0 +1,641 @@
+/* PatientDetail.css */
+
+.patient-detail-page {
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Page header (back button + breadcrumb) ── */
+.pd-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pd-back-btn {
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.pd-back-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.pd-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.pd-breadcrumb-link {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pd-breadcrumb-link:hover { text-decoration: underline; }
+
+.pd-breadcrumb-sep { color: #cbd5e1; }
+
+.pd-breadcrumb-current {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ── Main card ── */
+.pd-main-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* ── Card header (name + risk + chips) ── */
+.pd-card-header {
+  padding: 1.75rem 2.2rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.pd-name-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.pd-patient-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pd-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.pd-risk-badge.high  { background-color: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.pd-risk-badge.moderate { background-color: #fefce8; border-color: #fef08a; color: #854d0e; }
+.pd-risk-badge.stable   { background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+
+.pd-risk-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #64748b;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.pd-risk-dot.high     { background-color: #dc2626; }
+.pd-risk-dot.moderate { background-color: #d97706; }
+.pd-risk-dot.stable   { background-color: #10b981; }
+
+.pd-risk-badge.high .pd-risk-dot     { background-color: #dc2626; }
+.pd-risk-badge.moderate .pd-risk-dot { background-color: #d97706; }
+.pd-risk-badge.stable .pd-risk-dot   { background-color: #10b981; }
+
+.pd-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pd-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ── Insight callout ── */
+.pd-insight-card {
+  margin: 1.4rem 2.2rem 0;
+  padding: 1rem 1.4rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3.5px solid #0f172a;
+  border-radius: 10px;
+}
+
+.pd-insight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.pd-insight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.pd-insight-urgency {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #dc2626;
+}
+
+.pd-insight-desc {
+  font-size: 0.88rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Tabs navigation ── */
+.pd-tabs-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e2e8f0;
+  margin-top: 1.5rem;
+  padding: 0 2.2rem;
+}
+
+.pd-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  padding: 0.75rem 0;
+  margin-right: 2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.pd-tab-btn:hover { color: #0f172a; }
+
+.pd-tab-btn.active {
+  color: #0f172a;
+  border-bottom-color: #0f172a;
+}
+
+/* ── Tab body ── */
+.pd-tab-body {
+  padding: 2rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Risk gauge ── */
+.pd-gauge-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.4rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pd-gauge-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pd-section-kicker {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.pd-gauge-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.pd-gauge-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.pd-gauge-big-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.pd-gauge-big-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pd-progress-track {
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.pd-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+  background-color: #64748b;
+}
+
+.pd-progress-fill.high     { background-color: #dc2626; }
+.pd-progress-fill.moderate { background-color: #d97706; }
+.pd-progress-fill.stable   { background-color: #10b981; }
+
+.pd-legend-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pd-legend-step {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.pd-legend-step.current-step {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* ── Section blocks ── */
+.pd-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.pd-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pd-count-pill {
+  font-size: 0.74rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+}
+
+.pd-triggers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pd-trigger-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.88rem;
+  color: #1e293b;
+}
+
+.pd-trigger-index {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+  min-width: 20px;
+}
+
+.pd-trigger-text { font-weight: 500; }
+
+/* ── 4-D Matrix ── */
+.pd-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .pd-matrix-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .pd-matrix-grid { grid-template-columns: 1fr; }
+}
+
+.pd-matrix-col {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pd-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pd-col-count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background-color: #e2e8f0;
+  color: #475569;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.pd-col-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pd-symptom-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.pd-symptom-card .pd-risk-dot { margin-top: 4px; }
+
+/* ── Transcript ── */
+.pd-transcript-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pd-transcript-meta {
+  font-size: 0.82rem;
+  color: #64748b;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.pd-message-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pd-message-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.pd-message-meta-row strong {
+  color: #334155;
+  font-weight: 700;
+}
+
+.pd-message-bubble {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.88rem;
+  color: #1e293b;
+  line-height: 1.55;
+}
+
+.pd-message-item.care .pd-message-bubble {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #14532d;
+}
+
+.pd-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  width: fit-content;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.pd-flag-badge.warning {
+  background-color: #fefce8;
+  border-color: #fef08a;
+  color: #854d0e;
+}
+
+.pd-flag-badge .pd-risk-dot { background-color: #dc2626; }
+.pd-flag-badge.warning .pd-risk-dot { background-color: #d97706; }
+
+/* ── Interventions & Notes ── */
+.pd-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pd-actions-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pd-action-notice {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.pd-action-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pd-btn-escalate,
+.pd-btn-urgent,
+.pd-btn-care {
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.pd-btn-escalate {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.pd-btn-escalate:hover { background-color: #b91c1c; }
+
+.pd-btn-urgent {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.pd-btn-urgent:hover { background-color: #1e293b; }
+
+.pd-btn-care {
+  background-color: #ffffff;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.pd-btn-care:hover { background-color: #f1f5f9; }
+
+.pd-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pd-notes-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.pd-notes-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #1e293b;
+  resize: vertical;
+  background-color: #f8fafc;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.pd-notes-textarea:focus {
+  outline: none;
+  border-color: #0f172a;
+  background-color: #ffffff;
+}
+
+.pd-notes-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pd-save-confirm {
+  font-size: 0.82rem;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.pd-btn-save {
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pd-btn-save:hover { background-color: #1e293b; }
+
+/* ── Not found state ── */
+.pd-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #64748b;
+}
