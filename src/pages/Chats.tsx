@@ -249,7 +249,6 @@ const Chats = () => {
       [selectedContactId]: [...(prev[selectedContactId] || []), newMsg]
     }));
 
-    const textToSend = inputText;
     setInputText('');
 
     // Peer reply simulation

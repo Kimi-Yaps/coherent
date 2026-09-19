@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import heroPattern from '../assets/arc-truchet-butterfly-2026-09-11.svg';
 import mascotDog from '../assets/MascotDog.png';
 import './Home.css';

@@ -11,25 +11,40 @@ const Bookings = lazy(() => import('./pages/Bookings'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Admin = lazy(() => import('./pages/Admin'));
+const Auth = lazy(() => import('./pages/Auth'));
+const AdminPortal = lazy(() => import('./pages/AdminPortal'));
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div style={{ padding: '2rem' }}>Loading...</div>}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="ai-support" element={<AISupport />} />
-            <Route path="chats" element={<Chats />} />
-            <Route path="bookings" element={<Bookings defaultTab="booking" />} />
-            <Route path="reschedule" element={<Bookings defaultTab="reschedule" />} />
-            <Route path="calendar" element={<Bookings defaultTab="calendar" />} />
-            <Route path="faq" element={<FAQ />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="admin" element={<Admin />} />
-          </Route>
-        </Routes>
-      </Suspense>
+      <AuthProvider>
+        <Suspense fallback={<div style={{ padding: '2rem' }}>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="ai-support" element={<AISupport />} />
+              <Route path="chats" element={<Chats />} />
+              <Route path="bookings" element={<Bookings defaultTab="booking" />} />
+              <Route path="reschedule" element={<Bookings defaultTab="reschedule" />} />
+              <Route path="calendar" element={<Bookings defaultTab="calendar" />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="auth" element={<Auth />} />
+              <Route path="admin-portal" element={<AdminPortal />} />
+              <Route 
+                path="admin" 
+                element={
+                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                    <Admin />
+                  </ProtectedRoute>
+                } 
+              />
+            </Route>
+          </Routes>
+        </Suspense>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

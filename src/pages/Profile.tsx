@@ -1,18 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
+import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 const Profile = () => {
-  const [name, setName] = useState('Iman Hakimi');
-  const [username, setUsername] = useState('ImanHakimi');
-  const [email, setEmail] = useState('ImanHakimi@gmail.com');
+  const navigate = useNavigate();
+  const { profile, signOut, role } = useAuth();
+  
+  const [name, setName] = useState(profile?.displayName || 'Iman Hakimi');
+  const [username, setUsername] = useState(profile?.username || 'ImanHakimi');
+  const [email, setEmail] = useState(profile?.email || 'ImanHakimi@gmail.com');
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.displayName || '');
+      setUsername(profile.username || '');
+      setEmail(profile.email || '');
+    }
+  }, [profile]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth', { replace: true });
+  };
+
+  const initials = (name.split(' ').map((n) => n[0]).join('') || 'U').slice(0, 2).toUpperCase();
 
   const sidebarContent = (
     <div className="profile-sidebar">
@@ -27,10 +47,13 @@ const Profile = () => {
         
         <div className="profile-card">
           <div className="profile-header">
-            <div className="profile-avatar">IH</div>
+            <div className="profile-avatar">{initials}</div>
             <div className="profile-info">
               <h2>{name}</h2>
-              <span className="username-tag">@{username}</span>
+              <div className="username-tag">
+                <span>@{username}</span>
+                <span className="profile-role-badge">{role}</span>
+              </div>
             </div>
           </div>
           
@@ -68,6 +91,9 @@ const Profile = () => {
             <div className="form-actions-row">
               <button type="submit" className="save-btn">
                 {saved ? 'Changes Saved!' : 'Save Changes'}
+              </button>
+              <button type="button" className="signout-btn" onClick={handleSignOut}>
+                Sign Out
               </button>
             </div>
           </form>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import bellIcon from '../assets/frame.svg';
 import profileIcon from '../assets/Profile.svg';
 import './NavBar.css';
@@ -51,6 +52,7 @@ interface NavItemConfig {
   icon: string;
   description: string;
   badge?: string;
+  adminOnly?: boolean;
   isActive: (pathname: string) => boolean;
 }
 
@@ -99,6 +101,7 @@ const navItems: NavItemConfig[] = [
     path: '/admin',
     icon: '⚙️',
     description: 'Management & platform dashboard',
+    adminOnly: true,
     isActive: (pathname) => pathname.startsWith('/admin')
   }
 ];
@@ -106,6 +109,9 @@ const navItems: NavItemConfig[] = [
 const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { role, profile } = useAuth();
+  const isAdmin = role === 'clinician_admin';
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -202,18 +208,20 @@ const NavBar = () => {
           >
             Bookings
           </Link>
-          <Link 
-            to="/admin" 
-            className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
-            onClick={(e) => {
-              if (window.innerWidth <= 860) {
-                e.preventDefault();
-                setShowAdminDesktopNotice(true);
-              }
-            }}
-          >
-            Admin
-          </Link>
+          {isAdmin && (
+            <Link 
+              to="/admin" 
+              className={`nav-link ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+              onClick={(e) => {
+                if (window.innerWidth <= 860) {
+                  e.preventDefault();
+                  setShowAdminDesktopNotice(true);
+                }
+              }}
+            >
+              Admin
+            </Link>
+          )}
         </div>
         
         <div className="navbar-actions" ref={dropdownRef}>
@@ -276,10 +284,16 @@ const NavBar = () => {
             )}
           </div>
 
-          {/* Desktop profile button */}
-          <Link to="/profile" className="icon-btn profile-btn" title="Profile">
-            <img src={profileIcon} alt="Profile" />
-          </Link>
+          {/* Desktop profile or sign in button */}
+          {profile ? (
+            <Link to="/profile" className="icon-btn profile-btn" title="Profile">
+              <img src={profileIcon} alt="Profile" />
+            </Link>
+          ) : (
+            <Link to="/auth" className="nav-signin-btn" title="Sign In">
+              Sign In
+            </Link>
+          )}
 
           {/* Mobile burger toggle button */}
           <button
@@ -323,66 +337,77 @@ const NavBar = () => {
 
         {/* Fullscreen Menu Content */}
         <div className="mobile-fullscreen-body">
-          {/* Welcome status banner */}
-          <div className="mobile-menu-status">
-            <span className="status-dot" />
-            <span className="status-text">Your safe space for mental wellbeing</span>
-          </div>
-
           {/* Navigation links */}
           <div className="mobile-nav-group">
             <span className="mobile-nav-label">Navigation</span>
             <div className="mobile-links-list">
-              {navItems.map((item) => {
-                const active = item.isActive(location.pathname);
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.name === 'Admin' ? '#' : item.path}
-                    className={`mobile-nav-item ${active ? 'active' : ''}`}
-                    onClick={(e) => {
-                      if (item.name === 'Admin') {
-                        e.preventDefault();
-                        setShowAdminDesktopNotice(true);
-                      } else {
-                        setIsMobileMenuOpen(false);
-                      }
-                    }}
-                  >
-                    <div className="mobile-nav-item-left">
-                      <span className="mobile-nav-icon">{item.icon}</span>
-                      <div className="mobile-nav-text-col">
-                        <div className="mobile-nav-name-row">
-                          <span className="mobile-nav-name">{item.name}</span>
-                          {item.badge && <span className="mobile-nav-badge">{item.badge}</span>}
+              {navItems
+                .filter((item) => !item.adminOnly || isAdmin)
+                .map((item) => {
+                  const active = item.isActive(location.pathname);
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.name === 'Admin' ? '#' : item.path}
+                      className={`mobile-nav-item ${active ? 'active' : ''}`}
+                      onClick={(e) => {
+                        if (item.name === 'Admin') {
+                          e.preventDefault();
+                          setShowAdminDesktopNotice(true);
+                        } else {
+                          setIsMobileMenuOpen(false);
+                        }
+                      }}
+                    >
+                      <div className="mobile-nav-item-left">
+                        <span className="mobile-nav-icon">{item.icon}</span>
+                        <div className="mobile-nav-text-col">
+                          <div className="mobile-nav-name-row">
+                            <span className="mobile-nav-name">{item.name}</span>
+                            {item.badge && <span className="mobile-nav-badge">{item.badge}</span>}
+                          </div>
+                          <span className="mobile-nav-desc">{item.description}</span>
                         </div>
-                        <span className="mobile-nav-desc">{item.description}</span>
                       </div>
-                    </div>
-                    <div className="mobile-nav-arrow">
-                      <span>›</span>
-                    </div>
-                  </Link>
-                );
-              })}
+                      <div className="mobile-nav-arrow">
+                        <span>›</span>
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
 
           {/* User profile card */}
           <div className="mobile-profile-section">
             <span className="mobile-nav-label">Account</span>
-            <Link 
-              to="/profile" 
-              className={`mobile-profile-card ${location.pathname.startsWith('/profile') ? 'active' : ''}`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <img src={profileIcon} alt="Profile" className="mobile-profile-avatar" />
-              <div className="mobile-profile-info">
-                <span className="mobile-profile-name">My Profile</span>
-                <span className="mobile-profile-sub">Account settings & history</span>
-              </div>
-              <span className="mobile-nav-arrow">›</span>
-            </Link>
+            {profile ? (
+              <Link 
+                to="/profile" 
+                className={`mobile-profile-card ${location.pathname.startsWith('/profile') ? 'active' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <img src={profileIcon} alt="Profile" className="mobile-profile-avatar" />
+                <div className="mobile-profile-info">
+                  <span className="mobile-profile-name">{profile.displayName || 'My Profile'}</span>
+                  <span className="mobile-profile-sub">@{profile.username || 'member'} · {profile.role}</span>
+                </div>
+                <span className="mobile-nav-arrow">›</span>
+              </Link>
+            ) : (
+              <Link 
+                to="/auth" 
+                className="mobile-profile-card"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span style={{ fontSize: '1.5rem', marginRight: '0.75rem' }}>🔑</span>
+                <div className="mobile-profile-info">
+                  <span className="mobile-profile-name">Sign In / Register</span>
+                  <span className="mobile-profile-sub">Access your personal care companion</span>
+                </div>
+                <span className="mobile-nav-arrow">›</span>
+              </Link>
+            )}
           </div>
 
           {/* Footer note */}

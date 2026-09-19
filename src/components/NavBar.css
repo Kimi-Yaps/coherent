@@ -84,6 +84,25 @@
   border-radius: 50%;
 }
 
+.nav-signin-btn {
+  padding: 0.45rem 1.1rem;
+  background-color: var(--primary-color, #4e6e48);
+  color: #ffffff;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.nav-signin-btn:hover {
+  background-color: var(--primary-hover, #435f3e);
+  transform: translateY(-1px);
+}
+
 /* Notification Dropdown */
 .notification-wrapper {
   position: relative;
