@@ -5,9 +5,18 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "patientId", "order": "ASCENDING" },
-        { "fieldPath": "sessionDate", "order": "ASCENDING" }
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "ai_sessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
       ]
     }
   ],
   "fieldOverrides": []
 }
+
