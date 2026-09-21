@@ -72,9 +72,8 @@ const ClinicalCalendar = () => {
                 const day = i + 1;
                 const isToday = currentYear === 2024 && currentMonth === 8 && day === 19;
                 
-                const dayEvents = currentYear === 2024 && currentMonth === 8 
-                  ? mockEvents.filter(e => e.day === day)
-                  : [];
+                // Show events for all months dynamically
+                const dayEvents = mockEvents.filter(e => e.day === day);
 
                 return (
                   <div key={`day-${day}`} className={`calendar-day-cell ${isToday ? 'today' : ''}`}>

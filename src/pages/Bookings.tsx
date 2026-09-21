@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { useNotifications } from '../context/useNotifications';
+import { useAuth } from '../context/useAuth';
+import {
+  createBooking,
+  rescheduleBooking,
+  getPatientBookings,
+  type DbBooking,
+} from '../services/bookingDbService';
+import { isFirebaseConfigured } from '../firebase';
 import './Bookings.css';
 
 interface BookingsProps {
@@ -38,37 +46,111 @@ const days: DayOption[] = [
 
 const timeSlots = ['09:00', '10:30', '13:00', '15:30', '17:00', '19:30'];
 
-const rescheduleSessions = [
-  { id: 's1', date: '14 Sep', time: '10:30', counselor: 'Amelia Chen', status: 'Confirmed' },
-  { id: 's2', date: '18 Sep', time: '17:00', counselor: 'Rafael Ortiz', status: 'Scheduled' },
-  { id: 's3', date: '25 Sep', time: '09:00', counselor: 'Nadia Rahman', status: 'Scheduled' }
-];
-
-
 const Bookings = ({ defaultTab }: BookingsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as 'booking' | 'calendar' | 'reschedule') || defaultTab || 'booking';
   const [activeTab, setActiveTab] = useState<'booking' | 'calendar' | 'reschedule'>(initialTab);
   const { addNotification } = useNotifications();
+  const { user, profile } = useAuth();
 
-  // Booking state
+  const userId = user?.uid || profile?.uid || 'guest_user';
+  const storageKey = `coherent_user_bookings_${userId}`;
+
+  // Per-user Bookings State
+  const [userBookings, setUserBookings] = useState<DbBooking[]>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore storage parse error
+    }
+    return [];
+  });
+
+  // Load bookings for this user from Firestore if configured
+  const loadUserBookings = useCallback(async () => {
+    if (isFirebaseConfigured && userId) {
+      try {
+        const dbBookings = await getPatientBookings(userId);
+        if (dbBookings.length > 0) {
+          setUserBookings(dbBookings);
+          localStorage.setItem(storageKey, JSON.stringify(dbBookings));
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to load user bookings from Firestore:', err);
+      }
+    }
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setUserBookings(JSON.parse(saved));
+      } else {
+        setUserBookings([]);
+      }
+    } catch {
+      setUserBookings([]);
+    }
+  }, [userId, storageKey]);
+
+  useEffect(() => {
+    loadUserBookings();
+  }, [loadUserBookings]);
+
+  // Save to local storage whenever userBookings changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(userBookings));
+    } catch {
+      // ignore error
+    }
+  }, [userBookings, storageKey]);
+
+  // Booking form state
   const [selectedListener, setSelectedListener] = useState('Amelia Chen');
   const [selectedDay, setSelectedDay] = useState('Mon 14');
   const [selectedTime, setSelectedTime] = useState('10:30');
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
   // Reschedule state
-  const [rescheduleSession, setRescheduleSession] = useState('14 Sep · 10:30 · Amelia Chen');
+  const [selectedBookingId, setSelectedBookingId] = useState<string>('');
   const [rescheduleTime, setRescheduleTime] = useState('Mon 21 · 11:00');
   const [rescheduleNotice, setRescheduleNotice] = useState('');
+
+  // Set default selected booking for reschedule when bookings load
+  useEffect(() => {
+    if (userBookings.length > 0 && !selectedBookingId) {
+      setSelectedBookingId(userBookings[0].id);
+    }
+  }, [userBookings, selectedBookingId]);
 
   const handleTabChange = (tab: 'booking' | 'calendar' | 'reschedule') => {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
 
-  const handleMoveSession = () => {
-    setRescheduleNotice(`Session successfully moved to ${rescheduleTime}!`);
+  const handleMoveSession = async () => {
+    const target = userBookings.find(b => b.id === selectedBookingId) || userBookings[0];
+    if (!target) return;
+
+    const [newDate, newSlot] = rescheduleTime.includes('·')
+      ? rescheduleTime.split('·').map(s => s.trim())
+      : [rescheduleTime, target.timeSlot];
+
+    try {
+      await rescheduleBooking(target.id, newDate, newSlot || target.timeSlot);
+    } catch (err) {
+      console.warn('Reschedule sync failed, updating local state:', err);
+    }
+
+    const updated = userBookings.map(b => 
+      b.id === target.id 
+        ? { ...b, dateStr: newDate, timeSlot: newSlot || b.timeSlot, status: 'Rescheduled' as const }
+        : b
+    );
+    setUserBookings(updated);
+
+    setRescheduleNotice(`Session with ${target.counselorName} moved to ${rescheduleTime}!`);
     addNotification({
       icon: '🔄',
       title: 'Session Rescheduled',
@@ -79,8 +161,31 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
     setTimeout(() => setRescheduleNotice(''), 4000);
   };
 
-  const handleConfirmBooking = () => {
+  const handleConfirmBooking = async () => {
+    const listenerObj = listeners.find(l => l.name === selectedListener);
+    const counselorRole = listenerObj?.role || 'Counselor';
+
+    let newId = `booking_${Date.now()}`;
+    try {
+      newId = await createBooking(userId, selectedListener, counselorRole, selectedDay, selectedTime);
+    } catch (err) {
+      console.warn('Booking save error, saving locally:', err);
+    }
+
+    const newBooking: DbBooking = {
+      id: newId,
+      patientId: userId,
+      counselorName: selectedListener,
+      counselorRole,
+      dateStr: selectedDay,
+      timeSlot: selectedTime,
+      status: 'Confirmed',
+    };
+
+    setUserBookings(prev => [newBooking, ...prev]);
+    setSelectedBookingId(newId);
     setBookingConfirmed(true);
+
     addNotification({
       icon: '🗓️',
       title: 'Booking Confirmed',
@@ -145,58 +250,72 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
             {/* WHICH SESSION? Card */}
             <div className="booking-card">
               <h3 className="section-title">WHICH SESSION?</h3>
-              <div className="sessions-vertical-list">
-                {rescheduleSessions.map((session) => {
-                  const sessionLabel = `${session.date} · ${session.time} · ${session.counselor}`;
-                  const isSelected = rescheduleSession.includes(session.counselor);
-                  return (
-                    <button
-                      key={session.id}
-                      className={`session-bar-btn ${isSelected ? 'selected' : ''}`}
-                      onClick={() => setRescheduleSession(sessionLabel)}
-                    >
-                      <div className="session-bar-left">
-                        <span className="session-bar-date">{session.date}</span>
-                        <span className="session-bar-time">{session.time}</span>
-                      </div>
-                      <div className="session-bar-details">
-                        <span className="session-bar-name">{session.counselor}</span>
-                        <span className="session-bar-status">{session.status}</span>
-                      </div>
-                      <span className="session-bar-radio" />
-                    </button>
-                  );
-                })}
-              </div>
+              {userBookings.length === 0 ? (
+                <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b' }}>
+                  <p>You have no scheduled appointments to reschedule.</p>
+                  <button 
+                    className="btn-outline" 
+                    style={{ marginTop: '0.75rem' }} 
+                    onClick={() => handleTabChange('booking')}
+                  >
+                    Book a New Session
+                  </button>
+                </div>
+              ) : (
+                <div className="sessions-vertical-list">
+                  {userBookings.map((session) => {
+                    const isSelected = selectedBookingId === session.id;
+                    return (
+                      <button
+                        key={session.id}
+                        className={`session-bar-btn ${isSelected ? 'selected' : ''}`}
+                        onClick={() => setSelectedBookingId(session.id)}
+                      >
+                        <div className="session-bar-left">
+                          <span className="session-bar-date">{session.dateStr}</span>
+                          <span className="session-bar-time">{session.timeSlot}</span>
+                        </div>
+                        <div className="session-bar-details">
+                          <span className="session-bar-name">{session.counselorName}</span>
+                          <span className="session-bar-status">{session.status}</span>
+                        </div>
+                        <span className="session-bar-radio" />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* NEW TIME Card */}
-            <div className="booking-card">
-              <h3 className="section-title">PICK A NEW TIME</h3>
-              <div className="time-pills-grid">
-                {[
-                  'Mon 21 · 11:00',
-                  'Tue 22 · 14:00',
-                  'Wed 23 · 18:30',
-                  'Fri 25 · 09:30'
-                ].map((timeOption) => (
-                  <button
-                    key={timeOption}
-                    className={`time-pill-btn ${rescheduleTime === timeOption ? 'selected' : ''}`}
-                    onClick={() => setRescheduleTime(timeOption)}
-                  >
-                    {timeOption}
-                  </button>
-                ))}
-              </div>
+            {userBookings.length > 0 && (
+              <div className="booking-card">
+                <h3 className="section-title">PICK A NEW TIME</h3>
+                <div className="time-pills-grid">
+                  {[
+                    'Mon 21 · 11:00',
+                    'Tue 22 · 14:00',
+                    'Wed 23 · 18:30',
+                    'Fri 25 · 09:30'
+                  ].map((timeOption) => (
+                    <button
+                      key={timeOption}
+                      className={`time-pill-btn ${rescheduleTime === timeOption ? 'selected' : ''}`}
+                      onClick={() => setRescheduleTime(timeOption)}
+                    >
+                      {timeOption}
+                    </button>
+                  ))}
+                </div>
 
-              <button 
-                className="btn-full-green"
-                onClick={handleMoveSession}
-              >
-                Confirm New Session Time
-              </button>
-            </div>
+                <button 
+                  className="btn-full-green"
+                  onClick={handleMoveSession}
+                >
+                  Confirm New Session Time
+                </button>
+              </div>
+            )}
           </>
         )}
 
@@ -326,34 +445,51 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
             
             <div className="booking-card">
               <h3 className="section-title">UPCOMING SESSIONS</h3>
-              <div className="calendar-sessions-list">
-                {rescheduleSessions.map((session) => (
-                  <div key={session.id} className="calendar-session-card">
-                    <div className="calendar-session-date-box">
-                      <span className="cal-day">{session.date.split(' ')[0]}</span>
-                      <span className="cal-month">{session.date.split(' ')[1]}</span>
-                    </div>
-                    <div className="calendar-session-info">
-                      <div className="calendar-session-header-line">
-                        <span className="calendar-counselor-name">{session.counselor}</span>
-                        <span className={`calendar-status-badge ${session.status.toLowerCase()}`}>
-                          {session.status}
-                        </span>
+              {userBookings.length === 0 ? (
+                <div style={{ padding: '2rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
+                  <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>No upcoming sessions booked yet.</p>
+                  <button 
+                    className="btn-green" 
+                    onClick={() => handleTabChange('booking')}
+                  >
+                    Book Your First Session
+                  </button>
+                </div>
+              ) : (
+                <div className="calendar-sessions-list">
+                  {userBookings.map((session) => {
+                    const dateParts = (session.dateStr || 'Today').split(' ');
+                    const dayLabel = dateParts[0] || 'Day';
+                    const numLabel = dateParts[1] || '';
+                    return (
+                      <div key={session.id} className="calendar-session-card">
+                        <div className="calendar-session-date-box">
+                          <span className="cal-day">{dayLabel}</span>
+                          <span className="cal-month">{numLabel}</span>
+                        </div>
+                        <div className="calendar-session-info">
+                          <div className="calendar-session-header-line">
+                            <span className="calendar-counselor-name">{session.counselorName}</span>
+                            <span className={`calendar-status-badge ${(session.status || 'confirmed').toLowerCase()}`}>
+                              {session.status}
+                            </span>
+                          </div>
+                          <span className="calendar-time-line">🕒 {session.timeSlot} · 50 min session</span>
+                        </div>
+                        <button 
+                          className="calendar-reschedule-btn"
+                          onClick={() => {
+                            setSelectedBookingId(session.id);
+                            handleTabChange('reschedule');
+                          }}
+                        >
+                          Reschedule
+                        </button>
                       </div>
-                      <span className="calendar-time-line">🕒 {session.time} · 50 min session</span>
-                    </div>
-                    <button 
-                      className="calendar-reschedule-btn"
-                      onClick={() => {
-                        setRescheduleSession(`${session.date} · ${session.time} · ${session.counselor}`);
-                        handleTabChange('reschedule');
-                      }}
-                    >
-                      Reschedule
-                    </button>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </>
         )}

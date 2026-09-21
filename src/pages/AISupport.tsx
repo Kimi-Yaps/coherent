@@ -1,13 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { useChatQuota } from '../context/useChatQuota';
+import { useAuth } from '../context/useAuth';
 import {
   callGeminiCompanion,
   getGeminiModel,
   setGeminiModel,
   AVAILABLE_GEMINI_MODELS,
 } from '../services/geminiService';
+import {
+  createAiSession,
+  saveAiMessage,
+  getUserAiSessions,
+} from '../services/aiDbService';
+import { isFirebaseConfigured } from '../firebase';
 import './AISupport.css';
 
 interface Message {
@@ -25,8 +32,6 @@ interface AIChatSession {
   messages: Message[];
 }
 
-const STORAGE_SESSIONS_KEY = 'coherent_ai_chat_sessions';
-
 const createFreshSession = (): AIChatSession => ({
   id: `chat_${Date.now()}`,
   title: 'New Conversation',
@@ -35,9 +40,9 @@ const createFreshSession = (): AIChatSession => ({
   messages: [],
 });
 
-const loadInitialSessions = (): AIChatSession[] => {
+const loadUserSessionsFromStorage = (storageKey: string): AIChatSession[] => {
   try {
-    const raw = localStorage.getItem(STORAGE_SESSIONS_KEY);
+    const raw = localStorage.getItem(storageKey);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -52,6 +57,10 @@ const loadInitialSessions = (): AIChatSession[] => {
 
 const AISupport = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  const userId = user?.uid || profile?.uid || 'guest_user';
+  const storageSessionsKey = `coherent_ai_chat_sessions_${userId}`;
+
   const {
     dailyLimit,
     messagesRemaining,
@@ -64,8 +73,15 @@ const AISupport = () => {
   } = useChatQuota();
   
   const [currentModel, setCurrentModel] = useState<string>(() => getGeminiModel());
-  const [sessions, setSessions] = useState<AIChatSession[]>(loadInitialSessions);
+  const [sessions, setSessions] = useState<AIChatSession[]>(() => loadUserSessionsFromStorage(storageSessionsKey));
   const [activeChatId, setActiveChatId] = useState<string>(() => sessions[0]?.id || `chat_${Date.now()}`);
+
+  // Reload sessions whenever user changes
+  useEffect(() => {
+    const userSessions = loadUserSessionsFromStorage(storageSessionsKey);
+    setSessions(userSessions);
+    setActiveChatId(userSessions[0]?.id || `chat_${Date.now()}`);
+  }, [userId, storageSessionsKey]);
   const [inputValue, setInputValue] = useState('');
   const [isMobileViewingChat, setIsMobileViewingChat] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -183,11 +199,11 @@ const AISupport = () => {
   // Sync sessions to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_SESSIONS_KEY, JSON.stringify(sessions));
+      localStorage.setItem(storageSessionsKey, JSON.stringify(sessions));
     } catch {
       // Ignore storage error
     }
-  }, [sessions]);
+  }, [sessions, storageSessionsKey]);
 
   // Auto-scroll when messages or typing state changes
   useEffect(() => {

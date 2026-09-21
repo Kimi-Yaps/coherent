@@ -1,22 +1,10 @@
 import { useState, useEffect, useMemo, type ReactNode } from 'react';
 import { NotificationContext, type AppNotification } from './useNotifications';
-
-const STORAGE_KEY = 'coherent_notifications_v2';
+import { useAuth } from './useAuth';
 
 const initialDefaultNotifications: AppNotification[] = [
   {
     id: 'init_1',
-    icon: '🗓️',
-    title: 'Upcoming Session',
-    description: 'Dr. Amelia Chen · 14 Sep at 10:30',
-    time: '15m ago',
-    read: false,
-    link: '/bookings?tab=calendar',
-    category: 'booking',
-    createdAt: Date.now() - 15 * 60 * 1000,
-  },
-  {
-    id: 'init_2',
     icon: '✨',
     title: 'Mindfulness Practice',
     description: 'A 5-minute breathing exercise is ready for you.',
@@ -27,7 +15,7 @@ const initialDefaultNotifications: AppNotification[] = [
     createdAt: Date.now() - 45 * 60 * 1000,
   },
   {
-    id: 'init_3',
+    id: 'init_2',
     icon: '🌱',
     title: 'Gentle Reminder',
     description: 'Take three deep breaths. You are doing fine.',
@@ -40,9 +28,13 @@ const initialDefaultNotifications: AppNotification[] = [
 ];
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+  const { user, profile } = useAuth();
+  const userId = user?.uid || profile?.uid || 'guest_user';
+  const storageKey = `coherent_notifications_v2_${userId}`;
+
   const [notifications, setNotifications] = useState<AppNotification[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(storageKey);
       if (saved) {
         return JSON.parse(saved);
       }
@@ -52,13 +44,27 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     return initialDefaultNotifications;
   });
 
+  // Reload notifications when user changes
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setNotifications(JSON.parse(saved));
+      } else {
+        setNotifications(initialDefaultNotifications);
+      }
+    } catch {
+      setNotifications(initialDefaultNotifications);
+    }
+  }, [userId, storageKey]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(notifications));
     } catch {
       // Storage error ignored
     }
-  }, [notifications]);
+  }, [notifications, storageKey]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
