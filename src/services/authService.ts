@@ -50,7 +50,8 @@ export async function registerWithEmail(
     throw new Error('Firebase credentials are not configured in .env.');
   }
 
-  const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+  const cleanEmail = email.trim();
+  const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, pass);
   const user = userCredential.user;
 
   // Update Auth Profile
@@ -59,7 +60,7 @@ export async function registerWithEmail(
   // Store role and profile in Firestore
   const profile: UserProfile = {
     uid: user.uid,
-    email: user.email || email,
+    email: user.email || cleanEmail,
     displayName,
     username,
     role,
@@ -81,8 +82,30 @@ export async function loginWithEmail(email: string, pass: string): Promise<UserP
     throw new Error('Firebase credentials are not configured in .env.');
   }
 
-  const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-  return getUserProfile(userCredential.user.uid);
+  const cleanEmail = email.trim();
+  const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, pass);
+  const fbUser = userCredential.user;
+
+  let profile = await getUserProfile(fbUser.uid);
+  if (!profile) {
+    profile = {
+      uid: fbUser.uid,
+      email: fbUser.email || cleanEmail,
+      displayName: fbUser.displayName || cleanEmail.split('@')[0] || 'Member',
+      username: cleanEmail.split('@')[0] || 'member',
+      role: 'patient',
+    };
+    try {
+      await setDoc(doc(db, 'users', fbUser.uid), {
+        ...profile,
+        createdAt: serverTimestamp(),
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Could not auto-create user profile document:', e);
+    }
+  }
+
+  return profile;
 }
 
 /**
@@ -98,12 +121,17 @@ export async function logoutUser(): Promise<void> {
  * Fetch user document and role from Firestore.
  */
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
-  if (!isFirebaseConfigured) return null;
+  if (!isFirebaseConfigured || !uid) return null;
 
-  const docSnap = await getDoc(doc(db, 'users', uid));
-  if (docSnap.exists()) {
-    return docSnap.data() as UserProfile;
+  try {
+    const docSnap = await getDoc(doc(db, 'users', uid));
+    if (docSnap.exists()) {
+      return docSnap.data() as UserProfile;
+    }
+  } catch (err) {
+    console.warn('Error reading user profile document from Firestore:', err);
   }
+
   return null;
 }
 

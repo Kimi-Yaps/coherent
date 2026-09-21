@@ -1,5 +1,6 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 import { readdirSync, readFileSync } from 'fs';
 import { resolve, join } from 'path';
 
@@ -30,12 +31,82 @@ const app = initializeApp({
 });
 
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+async function createOrUpdateAuthUser(email, password, displayName, uid) {
+  try {
+    const existing = await auth.getUserByEmail(email);
+    await auth.updateUser(existing.uid, {
+      password,
+      displayName,
+    });
+    console.log(`  ✓ Updated Auth user: ${email} (Password: ${password})`);
+    return existing.uid;
+  } catch (err) {
+    if (err.code === 'auth/user-not-found') {
+      const user = await auth.createUser({
+        uid,
+        email,
+        password,
+        displayName,
+      });
+      console.log(`  ✓ Created Auth user: ${email} (Password: ${password})`);
+      return user.uid;
+    }
+    console.warn(`  ⚠️ Could not register Auth user ${email}:`, err.message);
+    return uid;
+  }
+}
 
 async function seedDatabase() {
-  console.log(`\nInitializing Firestore Collections for Project: ${serviceAccount.project_id} via Firebase Admin...\n`);
+  console.log(`\nInitializing Firestore & Firebase Auth for Project: ${serviceAccount.project_id}...\n`);
 
-  // 1. Counselors Collection
-  console.log('Creating [counselors] collection...');
+  // 1. Seed Authentication Users
+  console.log('Registering default Firebase Auth login accounts...');
+  const defaultPassword = 'Password123!';
+  const authUsers = [
+    {
+      uid: 'demo_patient_iman',
+      email: 'ImanHakimi@gmail.com',
+      displayName: 'Iman Hakimi',
+      username: 'ImanHakimi',
+      role: 'patient',
+    },
+    {
+      uid: 'demo_counselor_amelia',
+      email: 'amelia.chen@coherent.care',
+      displayName: 'Dr. Amelia Chen',
+      username: 'dr_amelia',
+      role: 'counselor',
+    },
+    {
+      uid: 'demo_admin',
+      email: 'clinical-desk@coherent.care',
+      displayName: 'Clinical Relapse Coordinator',
+      username: 'admin_clinical',
+      role: 'clinician_admin',
+    },
+  ];
+
+  for (const u of authUsers) {
+    const assignedUid = await createOrUpdateAuthUser(u.email, defaultPassword, u.displayName, u.uid);
+    // Write profile to Firestore
+    await db.collection('users').doc(assignedUid).set(
+      {
+        uid: assignedUid,
+        email: u.email,
+        displayName: u.displayName,
+        username: u.username,
+        role: u.role,
+        createdAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+  console.log(`✓ Firebase Auth users configured with password: "${defaultPassword}".`);
+
+  // 2. Counselors Collection
+  console.log('\nCreating [counselors] collection...');
   const counselors = [
     {
       id: 'amelia',
@@ -114,7 +185,7 @@ async function seedDatabase() {
   }
   console.log(`✓ Seeded ${counselors.length} counselors.`);
 
-  // 2. Watchlist Collection (Clinical Relapse Triggers)
+  // 3. Watchlist Collection (Clinical Relapse Triggers)
   console.log('\nCreating [watchlist] collection...');
   const watchlist = [
     {
@@ -171,41 +242,6 @@ async function seedDatabase() {
     });
   }
   console.log(`✓ Seeded ${watchlist.length} watchlist triggers.`);
-
-  // 3. Users Collection
-  console.log('\nCreating [users] collection...');
-  const users = [
-    {
-      id: 'demo_patient_iman',
-      displayName: 'Iman Hakimi',
-      username: 'ImanHakimi',
-      email: 'ImanHakimi@gmail.com',
-      role: 'patient',
-    },
-    {
-      id: 'demo_counselor_amelia',
-      displayName: 'Dr. Amelia Chen',
-      username: 'dr_amelia',
-      email: 'amelia.chen@coherent.care',
-      role: 'counselor',
-    },
-    {
-      id: 'demo_admin',
-      displayName: 'Clinical Relapse Coordinator',
-      username: 'admin_clinical',
-      email: 'clinical-desk@coherent.care',
-      role: 'clinician_admin',
-    },
-  ];
-
-  for (const u of users) {
-    const { id, ...data } = u;
-    await db.collection('users').doc(id).set({
-      ...data,
-      createdAt: FieldValue.serverTimestamp(),
-    });
-  }
-  console.log(`✓ Seeded ${users.length} users with roles.`);
 
   // 4. Bookings Collection
   console.log('\nCreating [bookings] collection...');
@@ -362,7 +398,7 @@ async function seedDatabase() {
   console.log(`✓ Seeded ${notifications.length} notifications.`);
 
   console.log('\n=============================================');
-  console.log('All Firestore Collections Seeded Successfully via Admin SDK!');
+  console.log('All Firebase Auth Users & Firestore Collections Seeded Successfully!');
   console.log('=============================================\n');
   process.exit(0);
 }

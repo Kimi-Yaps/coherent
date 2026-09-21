@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import logoIcon from '../assets/Logo.svg';
@@ -24,10 +24,12 @@ const Auth = () => {
   // Target destination after login
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
-  // If already logged in, redirect
-  if (user || profile) {
-    navigate(from, { replace: true });
-  }
+  // If already logged in, redirect safely inside useEffect
+  useEffect(() => {
+    if (user || profile) {
+      navigate(from, { replace: true });
+    }
+  }, [user, profile, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,8 +65,8 @@ const Auth = () => {
         setError('Password should be at least 6 characters.');
       } else if (msg.includes('auth/user-not-found')) {
         setError('No account found with this email. Please sign up.');
-      } else if (msg.includes('auth/configuration-not-found')) {
-        setError('Firebase Authentication is not activated in Console. Please enable "Email/Password" in Firebase Console ➔ Authentication ➔ Sign-in method.');
+      } else if (msg.includes('auth/configuration-not-found') || msg.includes('auth/operation-not-allowed')) {
+        setError('Firebase Email/Password Authentication is not activated in Console. Please enable "Email/Password" in Firebase Console ➔ Authentication ➔ Sign-in method.');
       } else {
         setError(msg);
       }
@@ -148,7 +150,6 @@ const Auth = () => {
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
-
             </>
           )}
 
