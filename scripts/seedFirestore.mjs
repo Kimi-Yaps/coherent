@@ -1,26 +1,38 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { readdirSync, readFileSync } from 'fs';
+import { resolve, join } from 'path';
 
-// Read config from environment variables loaded via --env-file=.env
-const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY,
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_FIREBASE_APP_ID,
-};
+// Locate service account key JSON file in project root
+const rootDir = process.cwd();
+let serviceAccountPath = null;
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  console.error('Error: Firebase configuration missing in .env');
+const files = readdirSync(rootDir);
+const keyFile = files.find(
+  (f) =>
+    f.endsWith('.json') &&
+    (f.includes('adminsdk') || f.includes('serviceAccount') || f.includes('firebase-adminsdk'))
+);
+
+if (keyFile) {
+  serviceAccountPath = join(rootDir, keyFile);
+} else {
+  console.error('Error: Could not find a Firebase service account JSON key file in the project root.');
+  console.error('Please place your downloaded service account key (e.g. serviceAccountKey.json) in the project directory.');
   process.exit(1);
 }
 
-const app = initializeApp(firebaseConfig);
+console.log(`Using Service Account Key: ${keyFile}`);
+const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+
+const app = initializeApp({
+  credential: cert(serviceAccount),
+});
+
 const db = getFirestore(app);
 
 async function seedDatabase() {
-  console.log(`\nInitializing Firestore Collections for Project: ${firebaseConfig.projectId}...\n`);
+  console.log(`\nInitializing Firestore Collections for Project: ${serviceAccount.project_id} via Firebase Admin...\n`);
 
   // 1. Counselors Collection
   console.log('Creating [counselors] collection...');
@@ -95,7 +107,10 @@ async function seedDatabase() {
 
   for (const c of counselors) {
     const { id, ...data } = c;
-    await setDoc(doc(db, 'counselors', id), { ...data, updatedAt: serverTimestamp() });
+    await db.collection('counselors').doc(id).set({
+      ...data,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${counselors.length} counselors.`);
 
@@ -129,7 +144,7 @@ async function seedDatabase() {
       name: 'Support Group Absenteeism',
       category: 'Behavioral Signs',
       severity: 'high',
-      detectionCues: 'skipped meeting, didn\'t go to group, avoiding sponsor, missed session, embarrassed to face them',
+      detectionCues: "skipped meeting, didn't go to group, avoiding sponsor, missed session, embarrassed to face them",
       aiAction: 'Alert care team & suggest urgent same-day recovery coordinator reach-out',
       clinicalRationale: 'Social avoidance and shame avoidance are key precursors to isolated physical substance intake.',
       detectionCount: 3,
@@ -150,7 +165,10 @@ async function seedDatabase() {
 
   for (const w of watchlist) {
     const { id, ...data } = w;
-    await setDoc(doc(db, 'watchlist', id), { ...data, updatedAt: serverTimestamp() });
+    await db.collection('watchlist').doc(id).set({
+      ...data,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${watchlist.length} watchlist triggers.`);
 
@@ -182,7 +200,10 @@ async function seedDatabase() {
 
   for (const u of users) {
     const { id, ...data } = u;
-    await setDoc(doc(db, 'users', id), { ...data, createdAt: serverTimestamp() });
+    await db.collection('users').doc(id).set({
+      ...data,
+      createdAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${users.length} users with roles.`);
 
@@ -220,36 +241,37 @@ async function seedDatabase() {
 
   for (const b of bookings) {
     const { id, ...data } = b;
-    await setDoc(doc(db, 'bookings', id), { ...data, createdAt: serverTimestamp() });
+    await db.collection('bookings').doc(id).set({
+      ...data,
+      createdAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${bookings.length} bookings.`);
 
   // 5. AI Sessions Collection
   console.log('\nCreating [ai_sessions] collection and sample messages...');
-  const aiSessionRef = doc(db, 'ai_sessions', 'session_mindfulness_daily');
-  await setDoc(aiSessionRef, {
+  const aiSessionRef = db.collection('ai_sessions').doc('session_mindfulness_daily');
+  await aiSessionRef.set({
     userId: 'demo_patient_iman',
     title: 'Daily Mindfulness & Stress',
-    preview: "Take three deep breaths. You are doing fine.",
+    preview: 'Take three deep breaths. You are doing fine.',
     date: 'Today',
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   });
 
-  const aiMsgRef1 = doc(db, 'ai_sessions', 'session_mindfulness_daily', 'messages', 'msg_1');
-  await setDoc(aiMsgRef1, {
+  await aiSessionRef.collection('messages').doc('msg_1').set({
     sender: 'assistant',
     text: "Hello! I'm your AI care companion. How are you feeling today?",
     time: '10:00 AM',
-    createdAt: serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
 
-  const aiMsgRef2 = doc(db, 'ai_sessions', 'session_mindfulness_daily', 'messages', 'msg_2');
-  await setDoc(aiMsgRef2, {
+  await aiSessionRef.collection('messages').doc('msg_2').set({
     sender: 'user',
-    text: "Feeling a bit overwhelmed with work deadlines.",
+    text: 'Feeling a bit overwhelmed with work deadlines.',
     time: '10:02 AM',
-    createdAt: serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
   console.log('✓ Seeded [ai_sessions] with conversation messages.');
 
@@ -288,7 +310,10 @@ async function seedDatabase() {
 
   for (const f of clinicalFlags) {
     const { id, ...data } = f;
-    await setDoc(doc(db, 'clinical_flags', id), { ...data, flaggedAt: serverTimestamp() });
+    await db.collection('clinical_flags').doc(id).set({
+      ...data,
+      flaggedAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${clinicalFlags.length} clinical flags.`);
 
@@ -329,12 +354,15 @@ async function seedDatabase() {
 
   for (const n of notifications) {
     const { id, ...data } = n;
-    await setDoc(doc(db, 'notifications', id), { ...data, createdAt: serverTimestamp() });
+    await db.collection('notifications').doc(id).set({
+      ...data,
+      createdAt: FieldValue.serverTimestamp(),
+    });
   }
   console.log(`✓ Seeded ${notifications.length} notifications.`);
 
   console.log('\n=============================================');
-  console.log('All 8 Firestore Collections Created Successfully!');
+  console.log('All Firestore Collections Seeded Successfully via Admin SDK!');
   console.log('=============================================\n');
   process.exit(0);
 }
