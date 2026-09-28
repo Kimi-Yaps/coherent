@@ -183,6 +183,70 @@
   line-height: 1.5;
 }
 
+/* ── AI clinical summary ── */
+.pd-ai-summary-card {
+  display: flex;
+  gap: 0.85rem;
+  margin: 1rem 2.2rem 0;
+  padding: 1rem 1.2rem;
+  background-color: #e8f6fd;
+  border: 1px solid #b9e1f3;
+  border-radius: 6px;
+}
+
+.pd-ai-summary-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  border-radius: 5px;
+  background-color: #087ea4;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.pd-ai-summary-content {
+  min-width: 0;
+}
+
+.pd-ai-summary-heading-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pd-ai-summary-heading-row h2 {
+  margin: 0;
+  color: #102a43;
+  font-size: 0.93rem;
+  font-weight: 800;
+}
+
+.pd-ai-summary-heading-row span {
+  color: #4c8da6;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pd-ai-summary-content p {
+  margin: 0.45rem 0 0.35rem;
+  color: #294b60;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.pd-ai-summary-content small {
+  color: #668494;
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
 /* ── Tabs navigation ── */
 .pd-tabs-nav {
   display: flex;

@@ -39,6 +39,22 @@ interface PatientSessionEvent {
   conversation: PatientConversationMessage[];
 }
 
+const buildPatientSummary = (event: PatientSessionEvent): string => {
+  const { relapseSymptoms } = event;
+  const symptomCount = [
+    ...relapseSymptoms.emotionalSymptoms,
+    ...relapseSymptoms.cognitiveSymptoms,
+    ...relapseSymptoms.behavioralSymptoms,
+    ...relapseSymptoms.physicalSymptoms,
+  ].length;
+  const triggerSummary = relapseSymptoms.identifiedTriggers.slice(0, 2).join(' and ').toLowerCase();
+  const riskSummary = relapseSymptoms.riskLevel === 'stable'
+    ? 'current relapse risk remains low'
+    : `current relapse risk is ${relapseSymptoms.riskLevel} at ${relapseSymptoms.riskScore}%`;
+
+  return `${event.patientName} is in ${event.primaryCondition.toLowerCase()} with ${event.recoveryDays} days of recovery progress. The record shows ${riskSummary} and is currently in ${relapseSymptoms.currentStage.toLowerCase()}. Key factors include ${triggerSummary}. Across the clinical record, ${symptomCount} signals were identified, supporting continued monitoring and a focused follow-up with ${event.assignedClinician}.`;
+};
+
 const PatientDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -153,6 +169,19 @@ const PatientDetail = () => {
             <p className="pd-insight-desc">
               AI and clinical markers indicate active relapse vulnerability. Immediate support review is active.
             </p>
+          </div>
+
+          {/* AI-generated overview from the patient's clinical session signals */}
+          <div className="pd-ai-summary-card">
+            <div className="pd-ai-summary-icon" aria-hidden="true">✣</div>
+            <div className="pd-ai-summary-content">
+              <div className="pd-ai-summary-heading-row">
+                <h2>AI Clinical Summary</h2>
+                <span>Generated from session signals</span>
+              </div>
+              <p>{buildPatientSummary(event)}</p>
+              <small>Review alongside the full clinical record. This summary supports, but does not replace, clinician judgment.</small>
+            </div>
           </div>
 
           {/* Tabs */}
