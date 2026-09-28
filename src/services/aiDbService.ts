@@ -15,7 +15,7 @@ import { db, isFirebaseConfigured } from '../firebase';
 
 export interface DbAiMessage {
   id: string;
-  sender: 'user' | 'assistant';
+  sender: 'user' | 'assistant' | 'admin';
   text: string;
   createdAt: unknown;
   timeFormatted?: string;
@@ -28,23 +28,37 @@ export interface DbAiSession {
   preview: string;
   updatedAt: unknown;
   createdAt: unknown;
+  userName?: string;
+  userEmail?: string;
+  adminRequested?: boolean;
 }
 
 /**
  * Create a new AI Support chat session in Firestore.
  */
-export async function createAiSession(userId: string, title = 'New Conversation'): Promise<string> {
+export async function createAiSession(
+  userId: string,
+  title = 'New Conversation',
+  sessionId?: string,
+  userName?: string,
+  userEmail?: string
+): Promise<string> {
   if (!isFirebaseConfigured) return `mock_session_${Date.now()}`;
 
-  const sessionsCol = collection(db, 'ai_sessions');
-  const docRef = await addDoc(sessionsCol, {
+  const sessionRef = sessionId
+    ? doc(db, 'ai_sessions', sessionId)
+    : doc(collection(db, 'ai_sessions'));
+  await setDoc(sessionRef, {
     userId,
     title,
+    userName: userName || '',
+    userEmail: userEmail || '',
+    adminRequested: false,
     preview: 'Conversation started...',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
-  return docRef.id;
+  }, { merge: true });
+  return sessionRef.id;
 }
 
 /**
@@ -52,8 +66,9 @@ export async function createAiSession(userId: string, title = 'New Conversation'
  */
 export async function saveAiMessage(
   sessionId: string,
-  sender: 'user' | 'assistant',
-  text: string
+  sender: 'user' | 'assistant' | 'admin',
+  text: string,
+  title?: string
 ): Promise<string> {
   if (!isFirebaseConfigured) return `mock_msg_${Date.now()}`;
 
@@ -69,12 +84,21 @@ export async function saveAiMessage(
     doc(db, 'ai_sessions', sessionId),
     {
       preview: text,
+      ...(title ? { title } : {}),
       updatedAt: serverTimestamp(),
     },
     { merge: true }
   );
 
   return docRef.id;
+}
+
+export async function requestAiSessionAdmin(sessionId: string): Promise<void> {
+  if (!isFirebaseConfigured) return;
+  await setDoc(doc(db, 'ai_sessions', sessionId), {
+    adminRequested: true,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 }
 
 /**
@@ -128,5 +152,38 @@ export async function getUserAiSessions(userId: string): Promise<DbAiSession[]> 
     preview: d.data().preview,
     updatedAt: d.data().updatedAt,
     createdAt: d.data().createdAt,
+    userName: d.data().userName,
+    userEmail: d.data().userEmail,
+    adminRequested: d.data().adminRequested,
   }));
+}
+
+export function subscribeToAdminRequestedSessions(
+  callback: (sessions: DbAiSession[]) => void
+): Unsubscribe {
+  if (!isFirebaseConfigured) {
+    callback([]);
+    return () => {};
+  }
+
+  const sessionsQuery = query(
+    collection(db, 'ai_sessions'),
+    where('adminRequested', '==', true)
+  );
+  return onSnapshot(sessionsQuery, (snapshot) => {
+    callback(snapshot.docs.map((sessionDoc) => {
+      const data = sessionDoc.data();
+      return {
+        id: sessionDoc.id,
+        userId: data.userId,
+        title: data.title,
+        preview: data.preview,
+        updatedAt: data.updatedAt,
+        createdAt: data.createdAt,
+        userName: data.userName,
+        userEmail: data.userEmail,
+        adminRequested: data.adminRequested,
+      };
+    }));
+  });
 }

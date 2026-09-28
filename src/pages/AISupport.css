@@ -286,6 +286,28 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.admin-request-btn {
+  flex-shrink: 0;
+  padding: 0.48rem 0.75rem;
+  color: #315b40;
+  background: #f2f7f2;
+  border: 1px solid #cbdacb;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.admin-request-btn:hover:not(:disabled) {
+  background: #e7f0e7;
+}
+
+.admin-request-btn:disabled {
+  color: #5a725e;
+  cursor: default;
+}
 .ai-header-status {
   display: inline-flex;
   align-items: center;
@@ -370,6 +392,10 @@
   justify-content: flex-start;
 }
 
+.message-bubble-wrapper.admin {
+  justify-content: flex-start;
+}
+
 .message-bubble {
   max-width: 75%;
   padding: 0.9rem 1.3rem;
@@ -399,6 +425,21 @@
   border: 1px solid #e2ede0;
   border-bottom-left-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.message-bubble.admin {
+  background-color: #e8f1e9;
+  color: #1f2937;
+  border: 1px solid #d5e4d7;
+  border-bottom-left-radius: 4px;
+}
+
+.message-sender-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #4f7058;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .message-timestamp {

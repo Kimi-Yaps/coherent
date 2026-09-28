@@ -16,7 +16,7 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return isAuthenticated() && getUserData().role == 'clinician_admin';
+      return isAuthenticated() && getUserData().role in ['admin', 'clinician_admin'];
     }
 
     // User profiles & roles
@@ -35,14 +35,31 @@ service cloud.firestore {
 
     // AI Support Care Companion Sessions
     match /ai_sessions/{sessionId} {
-      allow read, write: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid ||
-        isAdmin()
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+        request.resource.data.userId == resource.data.userId &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
       );
 
       match /messages/{messageId} {
-        allow read, write: if isAuthenticated();
+        function canAccessSession() {
+          return isAuthenticated() && (
+            get(/databases/$(database)/documents/ai_sessions/$(sessionId)).data.userId == request.auth.uid ||
+            isAdmin()
+          );
+        }
+
+        allow read: if canAccessSession();
+        allow create: if canAccessSession() && (
+          (request.resource.data.sender in ['user', 'assistant'] &&
+            get(/databases/$(database)/documents/ai_sessions/$(sessionId)).data.userId == request.auth.uid) ||
+          (request.resource.data.sender == 'admin' && isAdmin())
+        );
       }
     }
 
