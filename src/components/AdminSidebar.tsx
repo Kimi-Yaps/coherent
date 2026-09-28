@@ -11,6 +11,7 @@ const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => {
   const { pathname } = useLocation();
 
   const isAdminPage   = pathname === '/admin';
+  const isAdminChat = pathname.startsWith('/admin-chat');
   const isCalendar    = pathname.startsWith('/clinical-calendar');
   const isPatientDetail = pathname.startsWith('/patient-detail');
 
@@ -23,7 +24,7 @@ const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => {
     }
   };
 
-  const sectionLabel = isPatientDetail ? 'Patient Record' : 'Clinical Administration';
+  const sectionLabel = isPatientDetail ? 'Patient Record' : 'Administration';
 
   return (
     <div className="bookings-sidebar">
@@ -58,6 +59,14 @@ const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => {
       >
         <span className="sidebar-nav-bullet" />
         Patient Timeline
+      </button>
+
+      <button
+        className={`sidebar-nav-btn ${isAdminChat ? 'active' : ''}`}
+        onClick={() => navigate('/admin-chat')}
+      >
+        <span className="sidebar-nav-bullet" />
+        Patient Chats
       </button>
 
       {/* Calendar View */}

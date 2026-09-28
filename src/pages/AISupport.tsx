@@ -13,13 +13,16 @@ import {
   createAiSession,
   saveAiMessage,
   getUserAiSessions,
+  subscribeToAiSessionMessages,
+  requestAiSessionAdmin,
+  type DbAiMessage,
 } from '../services/aiDbService';
 import { isFirebaseConfigured } from '../firebase';
 import './AISupport.css';
 
 interface Message {
-  id: number;
-  sender: 'user' | 'assistant';
+  id: number | string;
+  sender: 'user' | 'assistant' | 'admin';
   text: string;
   time: string;
 }
@@ -30,6 +33,7 @@ interface AIChatSession {
   preview: string;
   date: string;
   messages: Message[];
+  adminRequested?: boolean;
 }
 
 const createFreshSession = (): AIChatSession => ({
@@ -59,6 +63,7 @@ const AISupport = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const userId = user?.uid || profile?.uid || 'guest_user';
+  const canUseSharedChat = Boolean(isFirebaseConfigured && user?.uid && !user.uid.startsWith('demo_'));
   const storageSessionsKey = `coherent_ai_chat_sessions_${userId}`;
 
   const {
@@ -75,13 +80,89 @@ const AISupport = () => {
   const [currentModel, setCurrentModel] = useState<string>(() => getGeminiModel());
   const [sessions, setSessions] = useState<AIChatSession[]>(() => loadUserSessionsFromStorage(storageSessionsKey));
   const [activeChatId, setActiveChatId] = useState<string>(() => sessions[0]?.id || `chat_${Date.now()}`);
+  const persistedSessionIds = useRef(new Set<string>());
+  const pendingSessionWrites = useRef(new Map<string, Promise<string>>());
+  const [persistenceRevision, setPersistenceRevision] = useState(0);
+
+  const ensureSharedSession = useCallback((session: AIChatSession): Promise<string | null> => {
+    if (!canUseSharedChat) return Promise.resolve(null);
+    if (persistedSessionIds.current.has(session.id)) return Promise.resolve(session.id);
+    const pendingWrite = pendingSessionWrites.current.get(session.id);
+    if (pendingWrite) return pendingWrite;
+
+    const write = createAiSession(
+      userId,
+      session.title,
+      session.id,
+      profile?.displayName,
+      profile?.email
+    ).then((id) => {
+      persistedSessionIds.current.add(id);
+      setPersistenceRevision((revision) => revision + 1);
+      return id;
+    }).finally(() => pendingSessionWrites.current.delete(session.id));
+    pendingSessionWrites.current.set(session.id, write);
+    return write;
+  }, [canUseSharedChat, userId, profile?.displayName, profile?.email]);
 
   // Reload sessions whenever user changes
   useEffect(() => {
     const userSessions = loadUserSessionsFromStorage(storageSessionsKey);
     setSessions(userSessions);
     setActiveChatId(userSessions[0]?.id || `chat_${Date.now()}`);
+    persistedSessionIds.current = new Set();
+    pendingSessionWrites.current.clear();
   }, [userId, storageSessionsKey]);
+
+  useEffect(() => {
+    if (!canUseSharedChat) return;
+    let cancelled = false;
+
+    const loadSharedSessions = async () => {
+      try {
+        const sharedSessions = await getUserAiSessions(userId);
+        if (cancelled) return;
+        if (sharedSessions.length > 0) {
+          const mappedSessions = sharedSessions.map((session) => ({
+            id: session.id,
+            title: session.title,
+            preview: session.preview,
+            date: 'Recent',
+            messages: [],
+            adminRequested: session.adminRequested,
+          }));
+          persistedSessionIds.current = new Set(mappedSessions.map((session) => session.id));
+          setPersistenceRevision((revision) => revision + 1);
+          setSessions(mappedSessions);
+          setActiveChatId(mappedSessions[0].id);
+        } else {
+          const initialSession = loadUserSessionsFromStorage(storageSessionsKey)[0] || createFreshSession();
+          await ensureSharedSession(initialSession);
+        }
+      } catch (error) {
+        console.error('Could not load shared chat sessions:', error);
+      }
+    };
+
+    void loadSharedSessions();
+    return () => { cancelled = true; };
+  }, [canUseSharedChat, userId, storageSessionsKey, ensureSharedSession]);
+
+  useEffect(() => {
+    if (!canUseSharedChat || !activeChatId || !persistedSessionIds.current.has(activeChatId)) return;
+    return subscribeToAiSessionMessages(activeChatId, (dbMessages: DbAiMessage[]) => {
+      const mappedMessages: Message[] = dbMessages.map((message) => ({
+        id: message.id,
+        sender: message.sender,
+        text: message.text,
+        time: message.timeFormatted || '',
+      }));
+      setSessions((previous) => previous.map((session) => session.id === activeChatId
+        ? { ...session, messages: mappedMessages }
+        : session
+      ));
+    });
+  }, [canUseSharedChat, activeChatId, persistenceRevision]);
   const [inputValue, setInputValue] = useState('');
   const [isMobileViewingChat, setIsMobileViewingChat] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -258,6 +339,9 @@ const AISupport = () => {
     const newSession = createFreshSession();
     setSessions((prev) => [newSession, ...prev]);
     setActiveChatId(newSession.id);
+    void ensureSharedSession(newSession).catch((error) => {
+      console.error('Could not create shared chat session:', error);
+    });
     setIsMobileViewingChat(true);
     window.history.pushState({ mobileChat: true }, '');
   };
@@ -282,13 +366,13 @@ const AISupport = () => {
     if (!textToSend || !activeSession || isTyping) return;
 
     // Check & consume quota
-    if (!consumeMessage()) {
+    if (!activeSession.adminRequested && !consumeMessage()) {
       return;
     }
 
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMsg: Message = {
-      id: Date.now(),
+      id: `local_${Date.now()}`,
       sender: 'user',
       text: textToSend,
       time: currentTime,
@@ -321,8 +405,17 @@ const AISupport = () => {
     setIsTyping(true);
 
     try {
+      if (canUseSharedChat) {
+        await ensureSharedSession({ ...activeSession, title: sessionTitle });
+        await saveAiMessage(activeSession.id, 'user', textToSend, sessionTitle);
+      }
+
+      if (activeSession.adminRequested) return;
+
       const response = await callGeminiCompanion(
-        updatedMessages.map((m) => ({ sender: m.sender, text: m.text })),
+        updatedMessages
+          .filter((message): message is Message & { sender: 'user' | 'assistant' } => message.sender !== 'admin')
+          .map((message) => ({ sender: message.sender, text: message.text })),
         textToSend
       );
 
@@ -331,7 +424,7 @@ const AISupport = () => {
       }
 
       const replyMsg: Message = {
-        id: Date.now() + 1,
+        id: `local_${Date.now() + 1}`,
         sender: 'assistant',
         text: response.text,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -344,6 +437,9 @@ const AISupport = () => {
             : s
         )
       );
+      if (canUseSharedChat) {
+        await saveAiMessage(activeSession.id, 'assistant', response.text);
+      }
     } catch (err) {
       console.error('Companion error:', err);
     } finally {
@@ -457,6 +553,27 @@ const AISupport = () => {
           <div className="ai-header-info">
             <h3 className="ai-header-title">{activeSession?.title || 'AI Companion'}</h3>
           </div>
+          <button
+            type="button"
+            className={`admin-request-btn ${activeSession?.adminRequested ? 'requested' : ''}`}
+            disabled={!canUseSharedChat || activeSession?.adminRequested}
+            title={!canUseSharedChat ? 'Sign in with a connected account to message an admin' : undefined}
+            onClick={async () => {
+              if (!activeSession || !canUseSharedChat || activeSession.adminRequested) return;
+              try {
+                await ensureSharedSession(activeSession);
+                await requestAiSessionAdmin(activeSession.id);
+                setSessions((previous) => previous.map((session) => session.id === activeSession.id
+                  ? { ...session, adminRequested: true }
+                  : session
+                ));
+              } catch (error) {
+                console.error('Could not request admin support:', error);
+              }
+            }}
+          >
+            {activeSession?.adminRequested ? 'Admin requested' : 'Talk to admin'}
+          </button>
         </div>        {/* Chat Messages */}
         <div className="ai-chat-history">
           {messages.length === 0 ? (
@@ -469,6 +586,7 @@ const AISupport = () => {
               {messages.map((msg) => (
                 <div key={msg.id} className={`message-bubble-wrapper ${msg.sender}`}>
                   <div className={`message-bubble ${msg.sender}`}>
+                    {msg.sender === 'admin' && <span className="message-sender-label">Admin</span>}
                     <p className="message-text">{msg.text}</p>
                     <span className="message-timestamp">{msg.time}</span>
                   </div>
@@ -495,7 +613,7 @@ const AISupport = () => {
 
         {/* Chat Input - Clean Minimalist Pattern */}
         <div className="chat-input-container">
-          {isQuotaExceeded && (
+          {isQuotaExceeded && !activeSession?.adminRequested && (
             <div className="quota-exceeded-notice">
               <div className="notice-text">
                 <strong>Model limit reached ({dailyLimit.toLocaleString()} RPD)</strong>
@@ -523,12 +641,14 @@ const AISupport = () => {
                   ? 'Daily request limit reached. Reset or wait until midnight.'
                   : isTyping
                   ? 'Care Companion is typing...'
+                  : activeSession?.adminRequested
+                  ? 'Message the admin...'
                   : 'Write a message...'
               }
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isQuotaExceeded || isTyping}
+              disabled={(isQuotaExceeded && !activeSession?.adminRequested) || isTyping}
             />
 
             <div className="claude-right-actions">
@@ -552,7 +672,7 @@ const AISupport = () => {
                   className="claude-send-btn"
                   onClick={() => handleSend()}
                   aria-label="Send message"
-                  disabled={isQuotaExceeded || isTyping}
+                  disabled={(isQuotaExceeded && !activeSession?.adminRequested) || isTyping}
                   title="Send message"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
