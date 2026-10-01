@@ -3,10 +3,8 @@ import SidebarLayout from '../components/SidebarLayout';
 import AdminSidebar from '../components/AdminSidebar';
 import {
   getAllBookingsForAdmin,
-  getCounselorsFromDb,
   parseBookingDate,
   type DbBooking,
-  type CounselorProfile,
 } from '../services/bookingDbService';
 import './ClinicalCalendar.css';
 
@@ -18,7 +16,6 @@ const ClinicalCalendar = () => {
   const [selectedBooking, setSelectedBooking] = useState<DbBooking | null>(null);
 
   const [bookings, setBookings] = useState<DbBooking[]>([]);
-  const [counselors, setCounselors] = useState<CounselorProfile[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const monthNames = [
@@ -29,12 +26,8 @@ const ClinicalCalendar = () => {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [bookingsData, counselorsData] = await Promise.all([
-        getAllBookingsForAdmin(),
-        getCounselorsFromDb(),
-      ]);
+      const bookingsData = await getAllBookingsForAdmin();
       setBookings(bookingsData);
-      setCounselors(counselorsData);
     } catch (err) {
       console.error('Error loading clinical calendar data:', err);
     } finally {

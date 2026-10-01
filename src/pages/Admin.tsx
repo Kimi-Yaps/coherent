@@ -1124,7 +1124,7 @@ const Admin = () => {
             displayName: firstSess.userName || 'Member',
             username: firstSess.userEmail ? firstSess.userEmail.split('@')[0] : 'member',
             email: firstSess.userEmail || '',
-            role: 'patient',
+            role: 'patient' as const,
           };
           if (isPatientUser(candidate)) {
             patientUsers.push(candidate);
@@ -1484,19 +1484,6 @@ const Admin = () => {
 
   const stableRiskCount = useMemo(() => {
     return patientTracks.reduce((acc, t) => acc + t.sessions.filter(s => s.riskLevel === 'stable').length, 0);
-  }, [patientTracks]);
-
-  const avgStabilityRating = useMemo(() => {
-    const all = patientTracks.flatMap((t) => t.sessions);
-    if (all.length === 0) return '4.8';
-    const sum = all.reduce(
-      (acc, s) =>
-        acc +
-        (s.stabilityRating ||
-          (s.riskLevel === 'stable' ? 4.9 : s.riskLevel === 'moderate' ? 3.5 : 1.6)),
-      0
-    );
-    return (sum / all.length).toFixed(1);
   }, [patientTracks]);
 
   const filteredWatchlist = watchlist.filter(item => {

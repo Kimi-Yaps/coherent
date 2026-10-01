@@ -40,7 +40,11 @@ const listeners: ListenerOption[] = [
   { id: 'nadia', name: 'Nadia Rahman', role: 'Peer Specialist', initials: 'NR', avatarBg: '#3e5c5a' }
 ];
 
-const timeSlots = ['09:00', '10:30', '13:00', '15:30', '17:00', '19:30'];
+const AVAILABLE_TIME_SLOTS = [
+  '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM',
+  '01:00 PM', '02:30 PM', '03:45 PM', '04:30 PM',
+  '05:30 PM', '06:45 PM', '07:30 PM', '08:15 PM'
+];
 
 const Bookings = ({ defaultTab }: BookingsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -88,11 +92,8 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
       d.setDate(base.getDate() + i);
       const dayName = dayNames[d.getDay()];
       const dateNum = String(d.getDate()).padStart(2, '0');
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const isoDate = `${yyyy}-${mm}-${dateNum}`;
       const time = times[i - 1];
-      slots.push(`${isoDate} · ${time}`);
+      slots.push(`${dayName} ${dateNum} · ${time}`);
     }
     return slots;
   }, []);
@@ -458,11 +459,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
               
               <h3 className="section-title mt-4">AVAILABLE TIME SLOTS</h3>
               <div className="time-slots-grid">
-                {[
-                  '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM',
-                  '01:00 PM', '02:30 PM', '03:45 PM', '04:30 PM',
-                  '05:30 PM', '06:45 PM', '07:30 PM', '08:15 PM'
-                ].map((time) => {
+                {AVAILABLE_TIME_SLOTS.map((time) => {
                   const isSelected = selectedTime === time;
                   return (
                     <button 
