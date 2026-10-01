@@ -2,20 +2,280 @@
 
 .calendar-page-container {
   padding: 2rem 2.5rem;
-  max-width: 1400px;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
 }
 
 .calendar-header-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
-.calendar-subtitle {
+.calendar-header-row .display-header {
+  margin: 0;
+  font-size: 2.1rem;
+}
+
+.calendar-header-row .btn-month-nav {
+  padding: 0.45rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.calendar-header-row .btn-month-nav:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+/* =========================================================================
+   DOCTOR AVAILABILITY & WORKLOAD SUMMARY ROSTER BAR
+   ========================================================================= */
+.doctor-roster-summary-bar {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.roster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.roster-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #475569;
+}
+
+.roster-legend {
+  font-size: 0.8rem;
   color: #64748b;
-  font-size: 0.95rem;
-  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
 }
 
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-dot.busy {
+  background-color: #ef4444;
+}
+
+.status-dot.available {
+  background-color: #10b981;
+}
+
+/* Top Slider Table Wrapper - Follows other admin tables styling */
+.admin-table-top-slider-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  transform: rotateX(180deg);
+  margin-top: 0.6rem;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-table-top-slider-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.admin-table-top-slider-wrapper > table {
+  transform: rotateX(180deg);
+  width: 100%;
+}
+
+.clinician-roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.clinician-roster-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid #e2e8f0;
+  letter-spacing: 0.04em;
+  background-color: #f8fafc;
+}
+
+.clinician-roster-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.88rem;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.clinician-roster-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.clinician-roster-table tr.selected-row {
+  background-color: #f0f9ff !important;
+}
+
+.doctor-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-filter-doctor {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-filter-doctor:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.btn-filter-doctor.active {
+  background-color: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.doctor-status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.doctor-status-badge.busy {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.doctor-status-badge.available {
+  background-color: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+/* =========================================================================
+   CALENDAR FILTER TOOLBAR
+   ========================================================================= */
+.calendar-filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-item label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.doctor-filter-select {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background-color: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.doctor-filter-select:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.btn-clear-filter {
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.btn-clear-filter:hover {
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
+/* =========================================================================
+   CALENDAR MAIN CARD & GRID
+   ========================================================================= */
 .calendar-card {
   background-color: #ffffff;
   border-radius: 12px;
@@ -94,13 +354,14 @@
 
 .calendar-day-cell {
   height: 120px;
-  padding: 0.75rem;
+  padding: 0.65rem;
   border-right: 1px solid #e2e8f0;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   background-color: #ffffff;
+  overflow-y: auto;
 }
 
 .calendar-day-cell:nth-child(7n) {
@@ -127,7 +388,7 @@
 }
 
 .calendar-day-num {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #334155;
   align-self: flex-end;
@@ -139,31 +400,334 @@
   gap: 0.35rem;
 }
 
-.calendar-event-badge {
+/* =========================================================================
+   BOOKING BADGES (DOCTOR NOT FREE)
+   ========================================================================= */
+.calendar-booking-badge {
   padding: 0.35rem 0.5rem;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  transition: all 0.15s ease;
+}
+
+.calendar-booking-badge:hover {
+  background-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+.calendar-booking-badge.completed {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.booking-badge-time {
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #7f1d1d;
+}
+
+.booking-badge-doc {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.calendar-event-badge.high {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+.booking-badge-patient {
+  font-size: 0.68rem;
+  color: #b91c1c;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.calendar-event-badge.moderate {
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
+/* =========================================================================
+   APPOINTMENT DETAIL MODAL
+   ========================================================================= */
+.booking-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
 }
 
-.calendar-event-badge.stable {
+.booking-modal-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.booking-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.booking-modal-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #0284c7;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.booking-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.booking-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.booking-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed #f1f5f9;
+}
+
+.booking-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.booking-info-row .label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.booking-info-row .val {
+  color: #1e293b;
+}
+
+.booking-info-row .val.bold {
+  font-weight: 700;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.status-pill.confirmed {
   background-color: #d1fae5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  color: #047857;
 }
+
+.status-pill.pending {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.status-pill.cancelled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.booking-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* =========================================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================================= */
+/* =========================================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================================= */
+@media (max-width: 1024px) {
+  .calendar-page-container {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .calendar-days-grid {
+    grid-auto-rows: 105px;
+  }
+
+  .calendar-day-cell {
+    height: 105px;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-page-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .calendar-header-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+  }
+
+  .calendar-header-row .display-header {
+    font-size: 1.5rem;
+  }
+
+  .doctor-roster-summary-bar {
+    padding: 1rem 0.85rem;
+  }
+
+  .roster-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .roster-legend {
+    font-size: 0.75rem;
+  }
+
+  .calendar-filter-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .filter-item {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .doctor-filter-select {
+    width: 100%;
+  }
+
+  .calendar-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .calendar-grid {
+    min-width: 580px;
+  }
+
+  .calendar-nav-header {
+    padding: 0.85rem 1rem;
+  }
+
+  .calendar-month-title {
+    font-size: 1.05rem;
+  }
+
+  .calendar-weekday-cell {
+    padding: 0.4rem 0.15rem;
+    font-size: 0.68rem;
+    text-align: center;
+  }
+
+  .calendar-days-grid {
+    grid-auto-rows: 85px;
+  }
+
+  .calendar-day-cell {
+    height: 85px;
+    padding: 0.35rem 0.25rem;
+  }
+
+  .calendar-day-num {
+    font-size: 0.75rem;
+  }
+
+  .calendar-booking-badge {
+    padding: 0.2rem 0.35rem;
+    font-size: 0.65rem;
+    gap: 0;
+  }
+
+  .booking-modal-card {
+    max-width: 95vw;
+  }
+
+  .booking-modal-body {
+    padding: 1.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-page-container {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .calendar-header-row .display-header {
+    font-size: 1.3rem;
+  }
+
+  .calendar-grid {
+    min-width: 520px;
+  }
+
+  .calendar-days-grid {
+    grid-auto-rows: 76px;
+  }
+
+  .calendar-day-cell {
+    height: 76px;
+    padding: 0.2rem 0.15rem;
+  }
+
+  .calendar-day-cell.today .calendar-day-num {
+    width: 18px;
+    height: 18px;
+    font-size: 0.68rem;
+  }
+
+  .booking-badge-patient {
+    display: none;
+  }
+}
+

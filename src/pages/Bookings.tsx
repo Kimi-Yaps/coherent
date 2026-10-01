@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { useNotifications } from '../context/useNotifications';
@@ -7,6 +7,7 @@ import {
   createBooking,
   rescheduleBooking,
   getPatientBookings,
+  parseBookingDate,
   type DbBooking,
 } from '../services/bookingDbService';
 import { isFirebaseConfigured } from '../firebase';
@@ -28,20 +29,15 @@ interface DayOption {
   dayName: string;
   dateNum: string;
   fullDate: string;
+  isoDate: string;
 }
 
 const listeners: ListenerOption[] = [
-  { id: 'amelia', name: 'Amelia Chen', role: 'Psychologist', initials: 'AC', avatarBg: '#3b6e58' },
+  { id: 'sarah', name: 'Dr. Sarah Jenkins', role: 'Lead Addiction Psychiatrist', initials: 'SJ', avatarBg: '#2b5a45' },
+  { id: 'michael', name: 'Dr. Michael Vance', role: 'Senior Clinical Psychologist', initials: 'MV', avatarBg: '#1e3a8a' },
+  { id: 'amelia', name: 'Dr. Amelia Chen', role: 'Clinical Care Specialist', initials: 'AC', avatarBg: '#701a75' },
   { id: 'rafael', name: 'Rafael Ortiz', role: 'Licensed Counselor', initials: 'RO', avatarBg: '#4e6e48' },
   { id: 'nadia', name: 'Nadia Rahman', role: 'Peer Specialist', initials: 'NR', avatarBg: '#3e5c5a' }
-];
-
-const days: DayOption[] = [
-  { dayName: 'Mon', dateNum: '14', fullDate: 'Mon 14' },
-  { dayName: 'Tue', dateNum: '15', fullDate: 'Tue 15' },
-  { dayName: 'Wed', dateNum: '16', fullDate: 'Wed 16' },
-  { dayName: 'Thu', dateNum: '17', fullDate: 'Thu 17' },
-  { dayName: 'Fri', dateNum: '18', fullDate: 'Fri 18' }
 ];
 
 const timeSlots = ['09:00', '10:30', '13:00', '15:30', '17:00', '19:30'];
@@ -55,6 +51,51 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
 
   const userId = user?.uid || profile?.uid || 'guest_user';
   const storageKey = `coherent_user_bookings_${userId}`;
+
+  // Generate dynamic upcoming days
+  const upcomingDays: DayOption[] = useMemo(() => {
+    const result: DayOption[] = [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const base = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      const dayName = dayNames[d.getDay()];
+      const dateNum = String(d.getDate()).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const isoDate = `${yyyy}-${mm}-${dateNum}`;
+      result.push({
+        dayName,
+        dateNum,
+        fullDate: `${dayName} ${dateNum}`,
+        isoDate,
+      });
+    }
+    return result;
+  }, []);
+
+  // Generate dynamic reschedule time slot options
+  const rescheduleOptions = useMemo(() => {
+    const slots: string[] = [];
+    const base = new Date();
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const times = ['10:30', '14:00', '16:00', '18:30'];
+
+    for (let i = 1; i <= 4; i++) {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      const dayName = dayNames[d.getDay()];
+      const dateNum = String(d.getDate()).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const isoDate = `${yyyy}-${mm}-${dateNum}`;
+      const time = times[i - 1];
+      slots.push(`${isoDate} · ${time}`);
+    }
+    return slots;
+  }, []);
 
   // Per-user Bookings State
   const [userBookings, setUserBookings] = useState<DbBooking[]>(() => {
@@ -107,14 +148,19 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
   }, [userBookings, storageKey]);
 
   // Booking form state
-  const [selectedListener, setSelectedListener] = useState('Amelia Chen');
-  const [selectedDay, setSelectedDay] = useState('Mon 14');
+  const [selectedListener, setSelectedListener] = useState(listeners[0].name);
+  const [selectedDayObj, setSelectedDayObj] = useState<DayOption>(upcomingDays[0] || {
+    dayName: 'Today',
+    dateNum: '01',
+    fullDate: 'Today 01',
+    isoDate: new Date().toISOString().slice(0, 10),
+  });
   const [selectedTime, setSelectedTime] = useState('10:30');
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
   // Reschedule state
   const [selectedBookingId, setSelectedBookingId] = useState<string>('');
-  const [rescheduleTime, setRescheduleTime] = useState('Mon 21 · 11:00');
+  const [rescheduleTime, setRescheduleTime] = useState(rescheduleOptions[0] || '11:00');
   const [rescheduleNotice, setRescheduleNotice] = useState('');
 
   // Set default selected booking for reschedule when bookings load
@@ -154,7 +200,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
     addNotification({
       icon: '🔄',
       title: 'Session Rescheduled',
-      description: `Your session was moved to ${rescheduleTime}.`,
+      description: `Your session with ${target.counselorName} was moved to ${rescheduleTime}.`,
       link: '/bookings?tab=calendar',
       category: 'booking',
     });
@@ -163,11 +209,14 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
 
   const handleConfirmBooking = async () => {
     const listenerObj = listeners.find(l => l.name === selectedListener);
-    const counselorRole = listenerObj?.role || 'Counselor';
+    const counselorRole = listenerObj?.role || 'Clinical Counselor';
 
     let newId = `booking_${Date.now()}`;
+    const patientName = user?.displayName || user?.email?.split('@')[0] || 'Member';
+    const targetDateStr = selectedDayObj.isoDate || selectedDayObj.fullDate;
+
     try {
-      newId = await createBooking(userId, selectedListener, counselorRole, selectedDay, selectedTime);
+      newId = await createBooking(userId, selectedListener, counselorRole, targetDateStr, selectedTime, patientName);
     } catch (err) {
       console.warn('Booking save error, saving locally:', err);
     }
@@ -175,9 +224,10 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
     const newBooking: DbBooking = {
       id: newId,
       patientId: userId,
+      patientName,
       counselorName: selectedListener,
       counselorRole,
-      dateStr: selectedDay,
+      dateStr: targetDateStr,
       timeSlot: selectedTime,
       status: 'Confirmed',
     };
@@ -189,7 +239,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
     addNotification({
       icon: '🗓️',
       title: 'Booking Confirmed',
-      description: `Session with ${selectedListener} confirmed for ${selectedDay} at ${selectedTime}.`,
+      description: `Session with ${selectedListener} confirmed for ${selectedDayObj.fullDate} at ${selectedTime}.`,
       link: '/bookings?tab=calendar',
       category: 'booking',
     });
@@ -265,6 +315,10 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
                 <div className="sessions-vertical-list">
                   {userBookings.map((session) => {
                     const isSelected = selectedBookingId === session.id;
+                    const parsed = parseBookingDate(session.dateStr);
+                    const displayDate = parsed 
+                      ? new Date(parsed.year, parsed.month, parsed.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })
+                      : session.dateStr;
                     return (
                       <button
                         key={session.id}
@@ -272,7 +326,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
                         onClick={() => setSelectedBookingId(session.id)}
                       >
                         <div className="session-bar-left">
-                          <span className="session-bar-date">{session.dateStr}</span>
+                          <span className="session-bar-date">{displayDate}</span>
                           <span className="session-bar-time">{session.timeSlot}</span>
                         </div>
                         <div className="session-bar-details">
@@ -292,12 +346,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
               <div className="booking-card">
                 <h3 className="section-title">PICK A NEW TIME</h3>
                 <div className="time-pills-grid">
-                  {[
-                    'Mon 21 · 11:00',
-                    'Tue 22 · 14:00',
-                    'Wed 23 · 18:30',
-                    'Fri 25 · 09:30'
-                  ].map((timeOption) => (
+                  {rescheduleOptions.map((timeOption) => (
                     <button
                       key={timeOption}
                       className={`time-pill-btn ${rescheduleTime === timeOption ? 'selected' : ''}`}
@@ -334,13 +383,13 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
 
             {bookingConfirmed && (
               <div className="notification-banner success">
-                ✓ Session successfully booked with {selectedListener} on {selectedDay} at {selectedTime}!
+                ✓ Session successfully booked with {selectedListener} on {selectedDayObj.fullDate} at {selectedTime}!
               </div>
             )}
             
             {/* CHOOSE A LISTENER */}
             <div className="booking-card">
-              <h3 className="section-title">CHOOSE A LISTENER</h3>
+              <h3 className="section-title">CHOOSE A LISTENER / CLINICIAN</h3>
               <div className="listeners-cards-grid">
                 {listeners.map((listener) => {
                   const isSelected = selectedListener === listener.name;
@@ -366,18 +415,39 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
                 })}
               </div>
             </div>
+
+            {/* SESSION FORMAT */}
+            <div className="booking-card">
+              <h3 className="section-title">SESSION FORMAT</h3>
+              <div className="time-pills-grid">
+                {[
+                  '50-Min 1-on-1 Video Session',
+                  '30-Min Audio Wellness Check-in',
+                  '15-Min Rapid Crisis Triage',
+                ].map((format) => (
+                  <button
+                    key={format}
+                    type="button"
+                    className={`time-pill-btn ${selectedTime.includes(format.slice(0, 6)) || format.startsWith('50-Min') ? 'selected' : ''}`}
+                    onClick={() => {}}
+                  >
+                    {format}
+                  </button>
+                ))}
+              </div>
+            </div>
             
             {/* PICK A DAY & TIME */}
             <div className="booking-card">
               <h3 className="section-title">PICK A DAY</h3>
               <div className="day-carousel-row">
-                {days.map((day) => {
-                  const isSelected = selectedDay === day.fullDate;
+                {upcomingDays.map((day) => {
+                  const isSelected = selectedDayObj.isoDate === day.isoDate;
                   return (
                     <button 
-                      key={day.fullDate}
+                      key={day.isoDate}
                       className={`day-chip-btn ${isSelected ? 'selected' : ''}`}
-                      onClick={() => setSelectedDay(day.fullDate)}
+                      onClick={() => setSelectedDayObj(day)}
                     >
                       <span className="day-chip-name">{day.dayName}</span>
                       <span className="day-chip-num">{day.dateNum}</span>
@@ -386,9 +456,13 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
                 })}
               </div>
               
-              <h3 className="section-title mt-4">PICK A TIME</h3>
+              <h3 className="section-title mt-4">AVAILABLE TIME SLOTS</h3>
               <div className="time-slots-grid">
-                {timeSlots.map((time) => {
+                {[
+                  '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM',
+                  '01:00 PM', '02:30 PM', '03:45 PM', '04:30 PM',
+                  '05:30 PM', '06:45 PM', '07:30 PM', '08:15 PM'
+                ].map((time) => {
                   const isSelected = selectedTime === time;
                   return (
                     <button 
@@ -409,7 +483,7 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
                 <div className="confirmation-badge-icon">🗓️</div>
                 <div className="confirmation-details">
                   <span className="confirmation-listener">{selectedListener}</span>
-                  <span className="confirmation-datetime">{selectedDay} · {selectedTime}</span>
+                  <span className="confirmation-datetime">{selectedDayObj.fullDate} · {selectedTime}</span>
                 </div>
               </div>
               <div className="confirmation-actions">
@@ -458,9 +532,13 @@ const Bookings = ({ defaultTab }: BookingsProps) => {
               ) : (
                 <div className="calendar-sessions-list">
                   {userBookings.map((session) => {
-                    const dateParts = (session.dateStr || 'Today').split(' ');
-                    const dayLabel = dateParts[0] || 'Day';
-                    const numLabel = dateParts[1] || '';
+                    const parsed = parseBookingDate(session.dateStr);
+                    const dayLabel = parsed 
+                      ? new Date(parsed.year, parsed.month, parsed.day).toLocaleDateString('en-US', { weekday: 'short' })
+                      : (session.dateStr || 'Day').split(' ')[0] || 'Day';
+                    const numLabel = parsed
+                      ? String(parsed.day)
+                      : (session.dateStr || '1').split(' ')[1] || '1';
                     return (
                       <div key={session.id} className="calendar-session-card">
                         <div className="calendar-session-date-box">

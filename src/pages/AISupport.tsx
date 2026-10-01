@@ -9,6 +9,7 @@ import {
   setGeminiModel,
   AVAILABLE_GEMINI_MODELS,
 } from '../services/geminiService';
+import { syncAiSessionAndMessage } from '../services/aiDbService';
 import './AISupport.css';
 
 interface Message {
@@ -314,6 +315,21 @@ const AISupport = () => {
     }
     setIsTyping(true);
 
+    const currentUserId = user?.uid || profile?.uid || (profile as any)?.id || 'guest_user';
+    const currentUserName = profile?.displayName || profile?.username || user?.displayName || user?.email?.split('@')[0] || 'Patient';
+    const currentUserEmail = profile?.email || user?.email || '';
+
+    // Async sync user message to Firestore
+    syncAiSessionAndMessage(
+      activeChatId,
+      currentUserId,
+      currentUserName,
+      currentUserEmail,
+      'user',
+      textToSend,
+      sessionTitle
+    ).catch((e) => console.warn('Could not sync user chat message:', e));
+
     try {
       const response = await callGeminiCompanion(
         updatedMessages.map((m) => ({ sender: m.sender, text: m.text })),
@@ -338,6 +354,17 @@ const AISupport = () => {
             : s
         )
       );
+
+      // Async sync assistant message to Firestore
+      syncAiSessionAndMessage(
+        activeChatId,
+        currentUserId,
+        currentUserName,
+        currentUserEmail,
+        'assistant',
+        response.text,
+        sessionTitle
+      ).catch((e) => console.warn('Could not sync assistant reply:', e));
     } catch (err) {
       console.error('Companion error:', err);
     } finally {

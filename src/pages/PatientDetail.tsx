@@ -17,6 +17,9 @@ interface RelapseSymptoms {
   riskScore: number;
   riskLevel: 'high' | 'moderate' | 'stable';
   currentStage: string;
+  stabilityRating?: number;
+  stabilityPercentage?: number;
+  triggerCount?: number;
   identifiedTriggers: string[];
   emotionalSymptoms: string[];
   cognitiveSymptoms: string[];
@@ -145,7 +148,7 @@ const PatientDetail = () => {
               <h1 className="pd-patient-name">{event.patientName}</h1>
               <span className={`pd-risk-badge ${event.relapseSymptoms.riskLevel}`}>
                 <span className="pd-risk-dot" />
-                {event.relapseSymptoms.riskScore}% Relapse Risk
+                ⭐ {event.relapseSymptoms.stabilityRating || (event.relapseSymptoms.riskLevel === 'stable' ? '4.9' : event.relapseSymptoms.riskLevel === 'moderate' ? '3.5' : '1.6')} / 5.0 AI Score ({event.relapseSymptoms.riskScore}% Risk)
               </span>
             </div>
             <div className="pd-meta-chips">
