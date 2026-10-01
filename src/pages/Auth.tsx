@@ -55,20 +55,29 @@ const Auth = () => {
 
       navigate(from, { replace: true });
     } catch (err: unknown) {
+      console.error('[Coherent Auth Error]:', err);
       const msg = err instanceof Error ? err.message : 'Authentication failed. Please try again.';
       // Friendly message replacements for Firebase error codes
       if (msg.includes('auth/invalid-credential') || msg.includes('auth/wrong-password')) {
         setError('Invalid email or password. Please check your credentials.');
       } else if (msg.includes('auth/email-already-in-use')) {
         setError('This email address is already registered. Please sign in instead.');
+      } else if (msg.includes('auth/username-already-in-use')) {
+        setError('This username is already taken. Please choose a different username.');
+      } else if (msg.includes('auth/invalid-email')) {
+        setError('Please enter a valid email address (e.g., name@example.com).');
       } else if (msg.includes('auth/weak-password')) {
-        setError('Password should be at least 6 characters.');
+        setError('Password must be at least 6 characters long.');
       } else if (msg.includes('auth/user-not-found')) {
-        setError('No account found with this email. Please sign up.');
-      } else if (msg.includes('auth/configuration-not-found') || msg.includes('auth/operation-not-allowed')) {
-        setError('Firebase Email/Password Authentication is not activated in Console. Please enable "Email/Password" in Firebase Console ➔ Authentication ➔ Sign-in method.');
+        setError('No account found with this email. Please create an account.');
+      } else if (msg.includes('auth/operation-not-allowed') || msg.includes('auth/configuration-not-found')) {
+        setError('Email/Password provider is not enabled in your Firebase Console. Go to Firebase Console ➔ Authentication ➔ Sign-in method ➔ Enable Email/Password.');
+      } else if (msg.includes('auth/admin-restricted-operation') || msg.includes('ADMIN_ONLY_OPERATION')) {
+        setError('Sign-up is disabled for this project. Go to Firebase Console ➔ Authentication ➔ Settings ➔ User actions ➔ Enable create (sign-up).');
+      } else if (msg.includes('auth/too-many-requests')) {
+        setError('Access temporarily disabled due to many failed attempts. Please try again later.');
       } else {
-        setError(msg);
+        setError(msg.replace(/^Firebase:\s*/, ''));
       }
     } finally {
       setLoading(false);

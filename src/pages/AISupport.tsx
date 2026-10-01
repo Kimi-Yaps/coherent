@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarLayout from '../components/SidebarLayout';
 import { useChatQuota } from '../context/useChatQuota';
@@ -9,12 +9,6 @@ import {
   setGeminiModel,
   AVAILABLE_GEMINI_MODELS,
 } from '../services/geminiService';
-import {
-  createAiSession,
-  saveAiMessage,
-  getUserAiSessions,
-} from '../services/aiDbService';
-import { isFirebaseConfigured } from '../firebase';
 import './AISupport.css';
 
 interface Message {
