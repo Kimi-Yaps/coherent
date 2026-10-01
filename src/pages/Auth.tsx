@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import logoIcon from '../assets/Logo.svg';
+import authIllustration from '../assets/CoherentAuth.webp';
 import './Auth.css';
 
 const Auth = () => {
@@ -86,116 +87,130 @@ const Auth = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        {/* Brand header */}
-        <div className="auth-header">
-          <Link to="/" className="auth-brand">
-            <img src={logoIcon} alt="Coherent" />
-            <span>Coherent</span>
-          </Link>
-          <h1 className="auth-title">
-            {mode === 'signin' ? 'Welcome back' : 'Create your account'}
-          </h1>
-          <p className="auth-subtitle">
-            {mode === 'signin'
-              ? 'Access your private wellbeing companion and counselor chats'
-              : 'Join a safe space for mental health care and recovery'}
-          </p>
-        </div>
-
-        {/* Tab switcher */}
-        <div className="auth-tabs">
-          <button
-            type="button"
-            className={`auth-tab ${mode === 'signin' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('signin');
-              setError('');
-            }}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
-            onClick={() => {
-              setMode('signup');
-              setError('');
-            }}
-          >
-            Sign Up
-          </button>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="auth-alert error" role="alert">
-            <span>⚠️</span>
-            <span>{error}</span>
+      <div className="auth-wrapper">
+        {/* Auth form card (Left side) */}
+        <div className="auth-card">
+          {/* Brand header */}
+          <div className="auth-header">
+            <Link to="/" className="auth-brand">
+              <img src={logoIcon} alt="Coherent" />
+              <span>Coherent</span>
+            </Link>
+            <h1 className="auth-title">
+              {mode === 'signin' ? 'Welcome back' : 'Create your account'}
+            </h1>
+            <p className="auth-subtitle">
+              {mode === 'signin'
+                ? 'Access your private wellbeing companion and counselor chats'
+                : 'Join a safe space for mental health care and recovery'}
+            </p>
           </div>
-        )}
 
-        {/* Form */}
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {mode === 'signup' && (
-            <>
-              <div className="auth-field">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Jordan Miller"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
+          {/* Tab switcher */}
+          <div className="auth-tabs">
+            <button
+              type="button"
+              className={`auth-tab ${mode === 'signin' ? 'active' : ''}`}
+              onClick={() => {
+                setMode('signin');
+                setError('');
+              }}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
+              onClick={() => {
+                setMode('signup');
+                setError('');
+              }}
+            >
+              Sign Up
+            </button>
+          </div>
 
-              <div className="auth-field">
-                <label>Username (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. jordan_m"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-            </>
+          {/* Error message */}
+          {error && (
+            <div className="auth-alert error" role="alert">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
           )}
 
-          <div className="auth-field">
-            <label>Email Address</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+          {/* Form */}
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {mode === 'signup' && (
+              <>
+                <div className="auth-field">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Jordan Miller"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label>Username (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. jordan_m"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="auth-field">
+              <label>Email Address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="auth-field">
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="auth-submit-btn"
+              disabled={loading}
+            >
+              {loading
+                ? 'Please wait...'
+                : mode === 'signin'
+                ? 'Sign In'
+                : 'Create Account'}
+            </button>
+          </form>
+        </div>
+
+        {/* Visual Artwork side (Right side) */}
+        <div className="auth-visual-side">
+          <div className="auth-visual-card">
+            <img 
+              src={authIllustration} 
+              alt="Coherent" 
+              className="auth-visual-image" 
             />
           </div>
-
-          <div className="auth-field">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="auth-submit-btn"
-            disabled={loading}
-          >
-            {loading
-              ? 'Please wait...'
-              : mode === 'signin'
-              ? 'Sign In'
-              : 'Create Account'}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
