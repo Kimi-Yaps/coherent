@@ -20,47 +20,58 @@ service cloud.firestore {
       );
     }
 
-    // User profiles & roles
+    // User profiles & roles - Users can only read/update their OWN profile unless admin
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated();
+      allow read, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
       allow delete: if isAdmin();
     }
 
     // Counselor profiles
     match /counselors/{counselorId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == counselorId || isAdmin());
     }
 
-    // AI Support Care Companion Sessions
+    // AI Support Care Companion Sessions - Strict User Isolation
     match /ai_sessions/{sessionId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAuthenticated() && (
+        resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid || isAdmin()
+      );
 
       match /messages/{messageId} {
-        allow read, write: if isAuthenticated();
+        allow read, write: if isAuthenticated() && (
+          get(/databases/$(database)/documents/ai_sessions/$(sessionId)).data.userId == request.auth.uid || isAdmin()
+        );
       }
     }
 
-    // Appointments & Bookings
+    // Appointments & Bookings - Patient or Counselor or Admin
     match /bookings/{bookingId} {
-      allow read, write: if isAuthenticated();
-      allow delete: if isAuthenticated();
+      allow read, write: if isAuthenticated() && (
+        resource == null || resource.data.userId == request.auth.uid || resource.data.counselorId == request.auth.uid || isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
     }
 
-    // Clinical Relapse Watchlist Triggers
+    // Clinical Relapse Watchlist Triggers (Clinical desk / Admin)
     match /watchlist/{triggerId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
-    // Clinical Flags & Transcripts
+    // Clinical Flags & Transcripts (Clinician review only)
     match /clinical_flags/{flagId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAdmin();
     }
 
     // Notifications
     match /notifications/{notifId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if isAuthenticated() && (
+        resource == null || resource.data.userId == request.auth.uid || isAdmin()
+      );
     }
   }
 }

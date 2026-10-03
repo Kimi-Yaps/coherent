@@ -10,6 +10,7 @@ import {
   AVAILABLE_GEMINI_MODELS,
 } from '../services/geminiService';
 import { syncAiSessionAndMessage } from '../services/aiDbService';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import './AISupport.css';
 
 interface Message {
@@ -490,7 +491,7 @@ const AISupport = () => {
               {messages.map((msg) => (
                 <div key={msg.id} className={`message-bubble-wrapper ${msg.sender}`}>
                   <div className={`message-bubble ${msg.sender}`}>
-                    <p className="message-text">{msg.text}</p>
+                    <MarkdownRenderer content={msg.text} />
                     <span className="message-timestamp">{msg.time}</span>
                   </div>
                 </div>
