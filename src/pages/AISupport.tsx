@@ -26,6 +26,7 @@ interface AIChatSession {
   preview: string;
   date: string;
   messages: Message[];
+  suggestedActions?: string[];
 }
 
 const createFreshSession = (): AIChatSession => ({
@@ -34,6 +35,7 @@ const createFreshSession = (): AIChatSession => ({
   preview: 'Start a conversation...',
   date: 'Today',
   messages: [],
+  suggestedActions: [],
 });
 
 const loadUserSessionsFromStorage = (storageKey: string): AIChatSession[] => {
@@ -50,6 +52,108 @@ const loadUserSessionsFromStorage = (storageKey: string): AIChatSession[] => {
   }
   return [createFreshSession()];
 };
+
+interface SuggestionChip {
+  label: string;
+  actionText: string;
+  isAction?: boolean;
+  route?: string;
+}
+
+function getContextualRecommendations(
+  session: AIChatSession | undefined,
+  isTyping: boolean
+): SuggestionChip[] {
+  if (isTyping) return [];
+
+  const messages = session ? session.messages : [];
+
+  // 1. If Gemini provided context-aware suggestions from the latest turn, prioritize them
+  if (session?.suggestedActions && session.suggestedActions.length > 0) {
+    const dynamicChips: SuggestionChip[] = session.suggestedActions.slice(0, 3).map((actionStr) => {
+      // Ensure it has an icon prefix if not present
+      const label = actionStr.startsWith('💡') || actionStr.startsWith('🌿') || actionStr.startsWith('🌬️') || actionStr.startsWith('⚖️') || actionStr.startsWith('✨')
+        ? actionStr
+        : `✨ ${actionStr}`;
+      return {
+        label,
+        actionText: actionStr,
+      };
+    });
+
+    dynamicChips.push({
+      label: '📅 Tempah Sesi Kaunselor',
+      actionText: '',
+      isAction: true,
+      route: '/bookings',
+    });
+
+    return dynamicChips;
+  }
+
+  if (messages.length === 0) {
+    return [
+      { label: '🌿 Stres di tempat kerja / Work Stress', actionText: 'Saya berasa sangat tertekan di tempat kerja dengan persekitaran toksik.' },
+      { label: '🌬️ Latihan Box Breathing 4-4-4', actionText: 'Boleh tunjukkan panduan latihan pernafasan untuk redakan rasa cemas?' },
+      { label: '🌙 Sukar Tidur Malam / Insomnia', actionText: 'Fikiran saya terlalu aktif dan sukar untuk tidur malam.' },
+      { label: '📅 Tempah Sesi Kaunselor', actionText: '', isAction: true, route: '/bookings' },
+    ];
+  }
+
+  const lastMsgs = messages.slice(-3).map((m) => m.text.toLowerCase()).join(' ');
+
+  // Defamation / Slander / Intense Anger
+  if (
+    lastMsgs.includes('fitnah') ||
+    lastMsgs.includes('slander') ||
+    lastMsgs.includes('dendam') ||
+    lastMsgs.includes('marah') ||
+    lastMsgs.includes('bunuh')
+  ) {
+    return [
+      { label: '⚖️ Langkah Saluran Undang-Undang', actionText: 'Bagaimana cara terbaik untuk saya kumpul bukti dan buat laporan rasmi?' },
+      { label: '🌬️ Latihan Bertenang & Jeda Fizikal', actionText: 'Bimbing saya teknik pernafasan untuk redakan rasa marah yang membuak.' },
+      { label: '📅 Tempah Kaunselor Berdaftar', actionText: '', isAction: true, route: '/bookings' },
+    ];
+  }
+
+  // Toxic work / Job stress
+  if (
+    lastMsgs.includes('work') ||
+    lastMsgs.includes('kerja') ||
+    lastMsgs.includes('toxic') ||
+    lastMsgs.includes('boss') ||
+    lastMsgs.includes('department')
+  ) {
+    return [
+      { label: '🛡️ Cara Bina Sempadan Emosi', actionText: 'Bagaimana cara praktikal untuk bina sempadan emosi di tempat kerja?' },
+      { label: '📝 Tips Hadapi Konflik HR', actionText: 'Apakah cara terbaik berkomunikasi dengan pihak pengurusan tanpa emosi?' },
+      { label: '📅 Sesi Bimbingan 1-on-1', actionText: '', isAction: true, route: '/bookings' },
+    ];
+  }
+
+  // Anxiety / Panic
+  if (
+    lastMsgs.includes('anxious') ||
+    lastMsgs.includes('anxiety') ||
+    lastMsgs.includes('cemas') ||
+    lastMsgs.includes('panik') ||
+    lastMsgs.includes('takut')
+  ) {
+    return [
+      { label: '🌬️ Mulakan Box Breathing Sekarang', actionText: 'Mari kita buat latihan Box Breathing 4-4-4 bersama-sama.' },
+      { label: '🌿 Teknik 5-4-3-2-1 Grounding', actionText: 'Bimbing saya teknik 5-4-3-2-1 untuk tenangkan fikiran.' },
+      { label: '💡 Cadangan bila cemas datang lagi', actionText: 'Apa persediaan yang boleh saya buat jika serangan cemas berulang?' },
+    ];
+  }
+
+  // General follow-up
+  return [
+    { label: '💡 Apa cadangan seterusnya?', actionText: 'Berdasarkan perbualan kita, apa langkah seterusnya yang anda cadangkan?' },
+    { label: '🌱 Cadangan Penjagaan Kendiri (Self-care)', actionText: 'Boleh kongsikan cadangan amalan penjagaan kendiri ringkas untuk hari ini?' },
+    { label: '📅 Tempah Sesi Kaunseling', actionText: '', isAction: true, route: '/bookings' },
+  ];
+}
 
 const AISupport = () => {
   const navigate = useNavigate();
@@ -333,7 +437,7 @@ const AISupport = () => {
 
     try {
       const response = await callGeminiCompanion(
-        updatedMessages.map((m) => ({ sender: m.sender, text: m.text })),
+        messages.map((m) => ({ sender: m.sender, text: m.text })),
         textToSend
       );
 
@@ -351,7 +455,12 @@ const AISupport = () => {
       setSessions((prev) =>
         prev.map((s) =>
           s.id === activeChatId
-            ? { ...s, preview: replyMsg.text, messages: [...s.messages, replyMsg] }
+            ? {
+                ...s,
+                preview: replyMsg.text,
+                messages: [...s.messages, replyMsg],
+                suggestedActions: response.suggestedActions || [],
+              }
             : s
         )
       );
@@ -456,6 +565,8 @@ const AISupport = () => {
   const modelPrimary = modelParts.slice(0, 2).join(' ');
   const modelVariant = modelParts.slice(2).join(' ') || 'Standard';
 
+  const suggestions = getContextualRecommendations(activeSession, isTyping);
+
   return (
     <SidebarLayout
       sidebarContent={sidebarContent}
@@ -515,8 +626,30 @@ const AISupport = () => {
           )}
         </div>
 
-        {/* Chat Input - Clean Minimalist Pattern */}
+        {/* Chat Input - Clean Minimalist Pattern with Real-time Recommendation Chips */}
         <div className="chat-input-container">
+          {/* Quick-Action Recommendation Chips */}
+          {suggestions.length > 0 && !isQuotaExceeded && (
+            <div className="suggestion-chips-row">
+              {suggestions.map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`suggestion-chip ${chip.isAction ? 'action-chip' : ''}`}
+                  onClick={() => {
+                    if (chip.isAction && chip.route) {
+                      navigate(chip.route);
+                    } else if (chip.actionText) {
+                      handleSend(chip.actionText);
+                    }
+                  }}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {isQuotaExceeded && (
             <div className="quota-exceeded-notice">
               <div className="notice-text">
