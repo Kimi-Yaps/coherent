@@ -425,14 +425,15 @@
 }
 
 .chat-input-container {
-  padding: 0.65rem 1.5rem 0.85rem 1.5rem;
+  padding: 0.75rem 1.5rem 1.25rem 1.5rem;
   background-color: #ffffff;
-  border-top: 1px solid #f1f5f1;
+  border-top: 1px solid #ebebeb;
   flex-shrink: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 /* Claude Design Pattern: Clean Minimalist Pill Input Card */
