@@ -463,8 +463,6 @@ const AISupport = () => {
   const modelPrimary = modelParts.slice(0, 2).join(' ');
   const modelVariant = modelParts.slice(2).join(' ') || 'Standard';
 
-  const suggestions = getContextualRecommendations(activeSession, isTyping);
-
   return (
     <SidebarLayout
       sidebarContent={sidebarContent}
@@ -524,30 +522,8 @@ const AISupport = () => {
           )}
         </div>
 
-        {/* Chat Input - Clean Minimalist Pattern with Real-time Recommendation Chips */}
+        {/* Chat Input - Clean Minimalist Pattern */}
         <div className="chat-input-container">
-          {/* Quick-Action Recommendation Chips */}
-          {suggestions.length > 0 && !isQuotaExceeded && (
-            <div className="suggestion-chips-row">
-              {suggestions.map((chip, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`suggestion-chip ${chip.isAction ? 'action-chip' : ''}`}
-                  onClick={() => {
-                    if (chip.isAction && chip.route) {
-                      navigate(chip.route);
-                    } else if (chip.actionText) {
-                      handleSend(chip.actionText);
-                    }
-                  }}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-          )}
-
           {isQuotaExceeded && (
             <div className="quota-exceeded-notice">
               <div className="notice-text">
