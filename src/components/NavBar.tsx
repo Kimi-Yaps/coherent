@@ -125,9 +125,14 @@ const NavBar = () => {
                 if (isMobileMenuOpen) setIsMobileMenuOpen(false);
               }}
               aria-expanded={showNotifications}
+              aria-label={`${unreadCount} unread notifications`}
             >
               <img src={bellIcon} alt="Notifications" />
-              {unreadCount > 0 && <span className="notification-dot" />}
+              {unreadCount > 0 && (
+                <span className="notification-dot" aria-hidden="true">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {showNotifications && (
