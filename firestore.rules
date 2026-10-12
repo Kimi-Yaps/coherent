@@ -17,7 +17,7 @@ service cloud.firestore {
           request.auth.token.email.matches('.*care.*') ||
           request.auth.token.email == 'clinical-desk@coherent.care'
         )) ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
          (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'clinician_admin', 'clinician']))
       );
     }

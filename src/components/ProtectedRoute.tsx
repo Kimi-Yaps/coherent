@@ -27,7 +27,7 @@ const ProtectedRoute = ({
 
   // If role requirement is specified and role does not match
   if (allowedRoles && !allowedRoles.includes(role)) {
-    if (allowedRoles.includes('clinician_admin')) {
+    if (allowedRoles.includes('clinician_admin') || allowedRoles.includes('admin')) {
       // Special redirect for admin portal
       return <Navigate to="/admin-portal" state={{ from: location }} replace />;
     }

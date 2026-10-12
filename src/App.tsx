@@ -14,6 +14,7 @@ const Auth = lazy(() => import('./pages/Auth'));
 const AdminPortal = lazy(() => import('./pages/AdminPortal'));
 const ClinicalCalendar = lazy(() => import('./pages/ClinicalCalendar'));
 const PatientDetail = lazy(() => import('./pages/PatientDetail'));
+const AdminChat = lazy(() => import('./pages/AdminChat'));
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthProvider';
 import { NotificationProvider } from './context/NotificationProvider';
@@ -75,15 +76,23 @@ function App() {
               <Route 
                 path="admin" 
                 element={
-                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                  <ProtectedRoute allowedRoles={['admin', 'clinician_admin']}>
                     <Admin />
                   </ProtectedRoute>
                 } 
               />
               <Route
+                path="admin-chat"
+                element={
+                  <ProtectedRoute allowedRoles={['admin', 'clinician_admin']}>
+                    <AdminChat />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="clinical-calendar"
                 element={
-                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                  <ProtectedRoute allowedRoles={['admin', 'clinician_admin']}>
                     <ClinicalCalendar />
                   </ProtectedRoute>
                 }
@@ -91,7 +100,7 @@ function App() {
               <Route
                 path="patient-detail"
                 element={
-                  <ProtectedRoute allowedRoles={['clinician_admin']}>
+                  <ProtectedRoute allowedRoles={['admin', 'clinician_admin']}>
                     <PatientDetail />
                   </ProtectedRoute>
                 }

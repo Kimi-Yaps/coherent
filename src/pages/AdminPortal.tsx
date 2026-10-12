@@ -22,10 +22,10 @@ const AdminPortal = () => {
     setError('');
 
     if (accessKey.trim() === DEFAULT_ADMIN_KEY || accessKey.trim().toLowerCase() === 'admin2026') {
-      loginAsDemo('clinician_admin');
+      loginAsDemo('admin');
       navigate('/admin', { replace: true });
     } else {
-      setError('Invalid clinical security key. Please check your credentials or use the demo pass.');
+      setError('Invalid admin access key. Please check your credentials or use the demo pass.');
     }
   };
 
@@ -50,14 +50,14 @@ const AdminPortal = () => {
     <div className="admin-portal-container">
       <div className="admin-portal-card">
 
-        <h1 className="admin-portal-title">Clinical Desk Gateway</h1>
+        <h1 className="admin-portal-title">Admin Portal</h1>
         <p className="admin-portal-subtitle">
-          Secure, HIPAA-aligned portal for clinical psychologists and relapse coordinators to review patient transcripts, risk scores, and trigger watchlists.
+          Secure admin access to patient conversations, care activity, and support tools.
         </p>
 
         {isMobile && (
           <div className="admin-portal-error" style={{ marginBottom: '1.25rem' }}>
-            <span>💻 Note: The full Clinical Desk dashboard requires a desktop/laptop computer view.</span>
+            <span>💻 Note: The full Admin dashboard requires a desktop/laptop computer view.</span>
           </div>
         )}
 
@@ -70,10 +70,10 @@ const AdminPortal = () => {
         {!useEmailAuth ? (
           <form className="admin-portal-form" onSubmit={handleKeySubmit}>
             <div className="admin-portal-field">
-              <label>Clinical Access Key</label>
+              <label>Admin Access Key</label>
               <input
                 type="password"
-                placeholder="Enter clinical security passkey"
+                placeholder="Enter admin access key"
                 value={accessKey}
                 onChange={(e) => setAccessKey(e.target.value)}
                 required
@@ -81,16 +81,16 @@ const AdminPortal = () => {
             </div>
 
             <button type="submit" className="admin-portal-btn">
-              Authenticate Clinical Terminal
+              Sign In as Admin
             </button>
           </form>
         ) : (
           <form className="admin-portal-form" onSubmit={handleEmailSubmit}>
             <div className="admin-portal-field">
-              <label>Clinician Email</label>
+              <label>Admin Email</label>
               <input
                 type="email"
-                placeholder="clinician@coherent.care"
+                placeholder="admin@coherent.care"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
                 required
@@ -109,7 +109,7 @@ const AdminPortal = () => {
             </div>
 
             <button type="submit" className="admin-portal-btn" disabled={loading}>
-              {loading ? 'Authenticating...' : 'Sign In as Clinician'}
+              {loading ? 'Signing in...' : 'Sign In as Admin'}
             </button>
           </form>
         )}
@@ -123,7 +123,7 @@ const AdminPortal = () => {
                 onClick={() => setUseEmailAuth(false)}
                 style={{ color: '#9cd490', textDecoration: 'underline' }}
               >
-                Use Clinical Access Key instead
+                Use Admin Access Key instead
               </button>
             ) : (
               <button
@@ -131,7 +131,7 @@ const AdminPortal = () => {
                 onClick={() => setUseEmailAuth(true)}
                 style={{ color: '#9cd490', textDecoration: 'underline' }}
               >
-                Sign in with Clinician Email / Password
+                Sign in with Admin Email / Password
               </button>
             )}
           </p>
