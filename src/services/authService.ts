@@ -6,7 +6,17 @@ import {
   updateProfile,
   type User as FirebaseUser 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  limit, 
+  serverTimestamp 
+} from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from '../firebase';
 
 export type UserRole = 'patient' | 'admin' | 'clinician_admin';
@@ -21,6 +31,46 @@ export interface UserProfile {
   geminiApiKey?: string;
   geminiModel?: string;
   createdAt?: unknown;
+}
+
+/**
+ * Checks if an email is already registered in the Firestore database `users` collection.
+ */
+export async function checkEmailExistsInDb(email: string): Promise<boolean> {
+  if (!isFirebaseConfigured || !email) return false;
+  try {
+    const clean = email.trim().toLowerCase();
+    const q = query(collection(db, 'users'), where('email', '==', clean), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) return true;
+
+    // Check exact case as fallback
+    const qRaw = query(collection(db, 'users'), where('email', '==', email.trim()), limit(1));
+    const snapRaw = await getDocs(qRaw);
+    return !snapRaw.empty;
+  } catch {
+    // If security rules disallow unauthenticated query, catch quietly and defer to Firebase Auth
+    return false;
+  }
+}
+
+/**
+ * Checks if a username is already taken in the Firestore database `users` collection.
+ */
+export async function checkUsernameExistsInDb(username: string): Promise<boolean> {
+  if (!isFirebaseConfigured || !username) return false;
+  try {
+    const clean = username.trim().toLowerCase();
+    const q = query(collection(db, 'users'), where('username', '==', clean), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) return true;
+
+    const qRaw = query(collection(db, 'users'), where('username', '==', username.trim()), limit(1));
+    const snapRaw = await getDocs(qRaw);
+    return !snapRaw.empty;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -51,6 +101,23 @@ export async function registerWithEmail(
   }
 
   const cleanEmail = email.trim();
+  const cleanUsername = (username || cleanEmail.split('@')[0]).trim();
+
+  // 1. Check if email already exists in Firestore user database
+  const emailInDb = await checkEmailExistsInDb(cleanEmail);
+  if (emailInDb) {
+    throw new Error('auth/email-already-in-use');
+  }
+
+  // 2. Check if username already exists in Firestore user database
+  if (cleanUsername) {
+    const usernameInDb = await checkUsernameExistsInDb(cleanUsername);
+    if (usernameInDb) {
+      throw new Error('auth/username-already-in-use');
+    }
+  }
+
+  // 3. Create Firebase Authentication credentials
   const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, pass);
   const user = userCredential.user;
 
@@ -62,7 +129,7 @@ export async function registerWithEmail(
     uid: user.uid,
     email: user.email || cleanEmail,
     displayName,
-    username,
+    username: cleanUsername,
     role,
   };
 
